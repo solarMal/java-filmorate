@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-    public void emailValidation(User user){
+    public void emailValidation(User user) {
         if (user.getEmail().isEmpty() || !user.getEmail().contains("@")) {
             log.warn("электронная почта не может быть пустой и должна содержать символ @");
             throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
@@ -25,7 +25,7 @@ public class UserService {
     }
 
     public void nameCanBeEmptyButLoginWillBeUsed(User user) {
-        if (user.getName().isEmpty()){
+        if (user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
     }
@@ -39,7 +39,7 @@ public class UserService {
         }
     }
 
-    public void allUserValidate(User user){
+    public void allUserValidate(User user) {
         emailValidation(user);
         loginValidation(user);
         nameCanBeEmptyButLoginWillBeUsed(user);

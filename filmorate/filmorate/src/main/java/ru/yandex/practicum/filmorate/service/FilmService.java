@@ -11,14 +11,14 @@ public class FilmService {
     private static final Logger log = LoggerFactory.getLogger(FilmService.class);
 
     public void filmNameCannotBeEmptyValidation(Film film) {
-        if (film.getName().isEmpty()){
+        if (film.getName().isEmpty()) {
             log.warn("У фильма должно быть название");
             throw new ValidationException("У фильма должно быть название");
         }
     }
 
     public void maxLengthDescriptionValidation(Film film) {
-        if (film.getDescription().length() > 200){
+        if (film.getDescription().length() > 200) {
             log.warn("Максимальная длинна описания должна быть меньше 200 символов");
             throw new ValidationException("Максимальная длинна описания должна быть меньше 200 символов");
         }
@@ -34,7 +34,7 @@ public class FilmService {
     }
 
     public void durationValidation(Film film) {
-        if (film.getDuration() <= 0){
+        if (film.getDuration() <= 0) {
             log.warn("Продолжительность фильма должна быть положительной");
             throw new ValidationException("Продолжительность фильма должна быть положительной");
         }
