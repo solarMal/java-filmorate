@@ -9,21 +9,22 @@ import java.time.LocalDate;
 
 public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
     public void emailValidation(User user){
-        if (user.getEmail().isEmpty() || !user.getEmail().contains("@")){
+        if (user.getEmail().isEmpty() || !user.getEmail().contains("@")) {
             log.warn("электронная почта не может быть пустой и должна содержать символ @");
             throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
         }
     }
 
-    public void loginValidation(User user){
-        if (user.getLogin().isEmpty() || user.getLogin().contains(" ")){
+    public void loginValidation(User user) {
+        if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
             log.warn("логин не может быть пустым и содержать пробелы");
             throw new ValidationException("логин не может быть пустым и содержать пробелы");
         }
     }
 
-    public void nameCanBeEmptyButLoginWillBeUsed(User user){
+    public void nameCanBeEmptyButLoginWillBeUsed(User user) {
         if (user.getName().isEmpty()){
             user.setName(user.getLogin());
         }
