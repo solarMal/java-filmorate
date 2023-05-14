@@ -62,7 +62,7 @@ public class UserController {
                         break;
                     }
                 }
-                if (!userUpdated){
+                if (!userUpdated) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(user);
                 }
             }
