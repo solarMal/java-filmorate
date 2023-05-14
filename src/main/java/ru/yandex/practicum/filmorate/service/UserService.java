@@ -35,6 +35,7 @@ public class UserService {
             user.setName(user.getLogin());
         }
     }
+
     public void birthdayCannotBeInFuture(User user) {
         LocalDate currentDate = LocalDate.now();
         LocalDate userBirthday = user.getBirthday();
