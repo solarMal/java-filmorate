@@ -47,12 +47,14 @@ public class UserController {
             int id = user.getId();
             userService.allUserValidate(user);
             if (users.size() == 0) {
-//                user.setId(nextUserId++);
                 users.add(user);
             } else {
                 for (int i = 0; i < users.size(); i++) {
                     User existingUser = users.get(i);
                     if (existingUser.getId() == id) {
+                        if (user.getName().isEmpty()) {
+                            user.setName(user.getLogin());
+                        }
                         user.setId(id);
                         users.set(i, user);
                         log.info("Информация об обновленных пользователях: {}", users);

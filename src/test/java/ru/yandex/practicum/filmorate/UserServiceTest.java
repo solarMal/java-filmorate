@@ -64,7 +64,7 @@ public class UserServiceTest {
     @Test
     public void testNameCanBeEmptyButLoginWillBeUsed() {
         user.setLogin("username");
-        user.setName("");
+        user.setName(null);
 
         userService.nameCanBeEmptyButLoginWillBeUsed(user);
 
