@@ -29,7 +29,7 @@ public class UserController {
         try {
             user.setId(nextUserId++);
             userService.allUserValidate(user);
-            if (users.contains(user)){
+            if (users.contains(user)) {
                 return ResponseEntity.status(HttpStatus.CREATED).body(user);
             }
             users.add(user);
@@ -46,10 +46,10 @@ public class UserController {
         try {
             int id = user.getId();
             userService.allUserValidate(user);
-            if (users.size() == 0){
+            if (users.size() == 0) {
 //                user.setId(nextUserId++);
                 users.add(user);
-            }else {
+            } else {
                 for (int i = 0; i < users.size(); i++) {
                     User existingUser = users.get(i);
                     if (existingUser.getId() == id) {
