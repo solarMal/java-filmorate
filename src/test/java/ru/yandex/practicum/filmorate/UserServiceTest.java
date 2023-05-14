@@ -73,7 +73,7 @@ public class UserServiceTest {
 
     @Test
     public void testBirthdayCannotBeInFuture() {
-        LocalDate futureDate = LocalDate.now().plusDays(1); // Future date
+        LocalDate futureDate = LocalDate.now().plusDays(1);
 
         user.setBirthday(futureDate);
 

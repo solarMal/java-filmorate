@@ -11,7 +11,7 @@ public class FilmService {
     private static final Logger log = LoggerFactory.getLogger(FilmService.class);
 
     public void filmNameCannotBeEmptyValidation(Film film) {
-        if (film.getName().isEmpty()) {
+        if (film.getName() == null || film.getName().isEmpty() || film.getName().equals("")) {
             log.warn("У фильма должно быть название");
             throw new ValidationException("У фильма должно быть название");
         }
