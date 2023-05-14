@@ -31,11 +31,10 @@ public class UserService {
     }
 
     public void nameCanBeEmptyButLoginWillBeUsed(User user) {
-        if (Objects.isNull(user.getName())) {
+        if (Objects.isNull(user.getName()) || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
     }
-
     public void birthdayCannotBeInFuture(User user) {
         LocalDate currentDate = LocalDate.now();
         LocalDate userBirthday = user.getBirthday();
