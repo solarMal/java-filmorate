@@ -41,27 +41,7 @@ public class FilmController {
         return ResponseEntity.ok(film);
     }
 
-//    @PutMapping()
-//    public ResponseEntity<?> updateFilm(@Valid @RequestBody Film updatedFilm) {
-//        try {
-//            int id = updatedFilm.getId();
-//            filmService.validateAll(updatedFilm);
-//            for (int i = 0; i < films.size(); i++) {
-//                Film film = films.get(i);
-//                if (film.getId() == id) {
-//                    updatedFilm.setId(id);
-//                    films.set(i, updatedFilm);
-//                    log.info("информация о обновлённых фильмах: {}", films);
-//                    return ResponseEntity.ok(updatedFilm);
-//                }
-//            }
-//            return ResponseEntity.notFound().build();
-//        } catch (ValidationException exception) {
-//            return ResponseEntity.badRequest().body(updatedFilm);
-//        }
-//    }
-
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<?> updateFilm(@Valid @RequestBody Film updatedFilm) {
         try {
             int id = updatedFilm.getId();
@@ -69,6 +49,7 @@ public class FilmController {
             if (films.size() == 0) {
                 films.add(updatedFilm);
             } else {
+                boolean filmUpdated = false;
                 for (int i = 0; i < films.size(); i++) {
                     Film film = films.get(i);
                     if (film.getId() == id) {
@@ -78,17 +59,19 @@ public class FilmController {
                         film.setReleaseDate(updatedFilm.getReleaseDate());
                         film.setDuration(updatedFilm.getDuration());
                         log.info("информация о обновлённых фильмах: {}", films);
-                        return ResponseEntity.ok(film);
+                        filmUpdated = true;
+                        break;
                     }
                 }
+                if (!filmUpdated) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(updatedFilm);
+                }
             }
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(updatedFilm);
         } catch (ValidationException exception) {
             return ResponseEntity.badRequest().body(exception.getMessage());
         }
     }
-
-
 
     @GetMapping
     public ResponseEntity<List<Film>> getAllFilms() {

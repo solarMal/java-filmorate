@@ -23,7 +23,6 @@ public class UserController {
     private List<User> users = new ArrayList<>();
     public int nextUserId = 1;
 
-
     @PostMapping
     public ResponseEntity<?> createUser(@Validated @RequestBody User user) {
         try {
@@ -49,6 +48,7 @@ public class UserController {
             if (users.size() == 0) {
                 users.add(user);
             } else {
+                boolean userUpdated = false;
                 for (int i = 0; i < users.size(); i++) {
                     User existingUser = users.get(i);
                     if (existingUser.getId() == id) {
@@ -58,8 +58,12 @@ public class UserController {
                         user.setId(id);
                         users.set(i, user);
                         log.info("Информация об обновленных пользователях: {}", users);
-                        return ResponseEntity.ok(user);
+                        userUpdated = true;
+                        break;
                     }
+                }
+                if (!userUpdated){
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(user);
                 }
             }
             return ResponseEntity.status(HttpStatus.OK).body(user);
@@ -67,8 +71,6 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
