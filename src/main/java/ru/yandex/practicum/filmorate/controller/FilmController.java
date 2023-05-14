@@ -26,9 +26,9 @@ public class FilmController {
     @PostMapping
     public ResponseEntity<?> createFilm(@RequestBody Film film) {
         try {
-            if (film.getId() == 0){
+            if (film.getId() == 0) {
                 film.setId(nextFilmId++);
-            }else {
+            } else {
                 nextFilmId++;
             }
             filmService.validateAll(film);
