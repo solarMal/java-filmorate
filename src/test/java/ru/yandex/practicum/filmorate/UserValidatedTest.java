@@ -2,27 +2,36 @@ package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.validated.UserValidated;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class UserServiceTest {
+public class UserValidatedTest {
     UserController userController;
-    private UserService userService;
+    UserService userService;
+    InMemoryUserStorage inMemoryUserStorage;
+    private UserValidated userValidated;
     private User user;
+
 
     @BeforeEach
     public void setup() {
-        userController = new UserController();
-        userService = new UserService();
+        inMemoryUserStorage = new InMemoryUserStorage();
+        userService = new UserService(inMemoryUserStorage);
+        userController = new UserController(userService);
+        userValidated = new UserValidated();
         user = new User();
-        userController.nextUserId = 1;
+        inMemoryUserStorage.nextUserId++;
     }
 
     @Test
@@ -30,7 +39,7 @@ public class UserServiceTest {
         user.setEmail("");
 
         assertThrows(ValidationException.class, () -> {
-            userService.emailValidation(user);
+            userValidated.emailValidation(user);
         });
     }
 
@@ -39,7 +48,7 @@ public class UserServiceTest {
         user.setEmail("invalidemail");
 
         assertThrows(ValidationException.class, () -> {
-            userService.emailValidation(user);
+            userValidated.emailValidation(user);
         });
     }
 
@@ -48,7 +57,7 @@ public class UserServiceTest {
         user.setLogin("");
 
         assertThrows(ValidationException.class, () -> {
-            userService.loginValidation(user);
+            userValidated.loginValidation(user);
         });
     }
 
@@ -57,7 +66,7 @@ public class UserServiceTest {
         user.setLogin("user name");
 
         assertThrows(ValidationException.class, () -> {
-            userService.loginValidation(user);
+            userValidated.loginValidation(user);
         });
     }
 
@@ -66,7 +75,7 @@ public class UserServiceTest {
         user.setLogin("username");
         user.setName(null);
 
-        userService.nameCanBeEmptyButLoginWillBeUsed(user);
+        userValidated.nameCanBeEmptyButLoginWillBeUsed(user);
 
         assertEquals(user.getLogin(), user.getName());
     }
@@ -78,8 +87,20 @@ public class UserServiceTest {
         user.setBirthday(futureDate);
 
         assertThrows(ValidationException.class, () -> {
-            userService.birthdayCannotBeInFuture(user);
+            userValidated.birthdayCannotBeInFuture(user);
         });
+    }
+
+    @Test
+    public void testGetUserById_UserNotFound() {
+        Long userId = 9999L;
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            userController.getUserById(userId);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("User not found", exception.getReason());
     }
 
     @Test
@@ -90,7 +111,7 @@ public class UserServiceTest {
         user.setBirthday(LocalDate.now().plusDays(1));
 
         assertThrows(ValidationException.class, () -> {
-            userService.allUserValidate(user);
+            userValidated.allUserValidate(user);
         });
     }
 }
