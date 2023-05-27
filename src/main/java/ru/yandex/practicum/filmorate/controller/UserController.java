@@ -11,13 +11,9 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.InvalidLoginException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
-import javax.validation.Valid;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -88,15 +84,15 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public Set<User> getListMutualFriends(@PathVariable("id") Long userId
-            , @PathVariable("otherId") Long otherId) {
+    public Set<User> getListMutualFriends(@PathVariable("id") Long userId,
+                                          @PathVariable("otherId") Long otherId) {
         User user = userService.getUserById(userId);
         User otherUser = userService.getUserById(otherId);
 
         if (user != null && otherUser != null) {
             Set<User> mutualFriends = userService.getListMutualFriends(user, otherUser);
-            log.info("Mutual friends retrieved: User={}, OtherUser={}, MutualFriends={}"
-                    , user, otherUser, mutualFriends);
+            log.info("Mutual friends retrieved: User={}, OtherUser={}, MutualFriends={}",
+                    user, otherUser, mutualFriends);
             return mutualFriends;
         } else {
             log.warn("User(s) not found: userId={}, otherId={}", userId, otherId);
@@ -120,7 +116,7 @@ public class UserController {
         User user = userService.getUserById(userId);
         User friend = userService.getUserById(friendId);
 
-        if (user != null && friend != null){
+        if (user != null && friend != null) {
             userService.removeFriend(user, friend);
             log.info("Friend removed: User={}, Friend={}", user, friend);
         } else {
