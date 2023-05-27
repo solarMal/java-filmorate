@@ -85,8 +85,8 @@ public class FilmService {
     public List<Film> getTop10Films() {
         List<Film> films = filmStorage.getFilms();
 
-        films.sort((film1, film2) -> Integer.compare(film2.getFilmLikeByUserId().size()
-                , film1.getFilmLikeByUserId().size()));
+        films.sort((film1, film2) -> Integer.compare(film2.getFilmLikeByUserId().size(),
+                film1.getFilmLikeByUserId().size()));
 
         return films.stream().limit(10).collect(Collectors.toList());
     }
