@@ -7,7 +7,10 @@ import java.util.Set;
 
 public interface UserStorage {
     ResponseEntity<?> createUser(User user);
+
     ResponseEntity<?> updateUser(User user);
+
     ResponseEntity<?> getAllUsers();
+
     Set<User> getUsers();
 }

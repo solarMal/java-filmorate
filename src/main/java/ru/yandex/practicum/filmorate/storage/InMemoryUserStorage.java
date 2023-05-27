@@ -83,7 +83,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Set<User> getUsers(){
+    public Set<User> getUsers() {
         return users;
     }
 }
