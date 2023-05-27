@@ -103,9 +103,9 @@ public class UserService {
 
     public Set<User> getListMutualFriends(User user, User otherUser) {
         Set<User> mutualFriends = new HashSet<>();
-        for (Long userId : user.getFriendsId()){
-            for (Long otherUserId : otherUser.getFriendsId()){
-                if (userId.equals(otherUserId)){
+        for (Long userId : user.getFriendsId()) {
+            for (Long otherUserId : otherUser.getFriendsId()) {
+                if (userId.equals(otherUserId)) {
                     User friend = getUserById(userId);
                     mutualFriends.add(friend);
                 }
