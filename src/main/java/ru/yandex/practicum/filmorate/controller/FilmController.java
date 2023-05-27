@@ -52,8 +52,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<Film>> getTopFilmsByLikes(
-            @RequestParam(value = "count", defaultValue = "10") int count) {
+    public ResponseEntity<List<Film>> getTopFilmsByLikes(@RequestParam(value = "count"
+            , defaultValue = "10") int count) {
         List<Film> films = filmService.getTop10Films();
 
         List<Film> topFilms = films.stream().limit(count).collect(Collectors.toList());
