@@ -18,14 +18,6 @@ import java.util.stream.Collectors;
 @Validated
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
-//    UserController userController;
-//    FilmService filmService;
-//
-//    @Autowired
-//    public FilmController(UserController userController, FilmService filmService) {
-//        this.userController = userController;
-//        this.filmService = filmService;
-//    }
 
     FilmService filmService;
 
@@ -60,8 +52,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<Film>> getTopFilmsByLikes
-            (@RequestParam(value = "count", defaultValue = "10") int count) {
+    public ResponseEntity<List<Film>> getTopFilmsByLikes(
+            @RequestParam(value = "count", defaultValue = "10") int count) {
         List<Film> films = filmService.getTop10Films();
 
         List<Film> topFilms = films.stream().limit(count).collect(Collectors.toList());
