@@ -25,12 +25,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public ResponseEntity<?> createFilm(Film film) {
         try {
-            if (film.getId() == 0) {
-                film.setId(nextFilmId++);
-            } else {
-                nextFilmId++;
-            }
             filmValidated.validateAll(film);
+            film.setId(nextFilmId++);
             films.add(film);
             log.info("информация о созданных фильмах: {}", films);
         } catch (ValidationException exception) {

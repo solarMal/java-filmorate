@@ -18,7 +18,7 @@ public class FilmService {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     UserService userService;
-    FilmStorage filmStorage;
+    public FilmStorage filmStorage;
 
     @Autowired
     public FilmService(UserService userService, FilmStorage filmStorage) {

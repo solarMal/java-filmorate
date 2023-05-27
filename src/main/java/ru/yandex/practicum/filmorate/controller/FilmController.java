@@ -41,6 +41,15 @@ public class FilmController {
         return filmService.getAllFilms();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Film> getFilmById(@PathVariable("id") int id) {
+        Film film = filmService.filmStorage.getFilmById(id);
+        if (film == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(film);
+    }
+
     @PutMapping("/{id}/like/{userId}")
     public ResponseEntity<?> addFilmLike(@PathVariable("id") Long id, @PathVariable("userId") long userId) {
         return filmService.addFilmLike(id, userId);

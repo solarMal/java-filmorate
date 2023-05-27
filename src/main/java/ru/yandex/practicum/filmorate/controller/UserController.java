@@ -77,10 +77,10 @@ public class UserController {
             Set<User> friendsList = userService.getFriendsList(user);
 
             List<User> sortedFriendsList = new ArrayList<>(friendsList);
-            sortedFriendsList.sort(Comparator.comparingInt(User::getId));
+            sortedFriendsList.sort(Comparator.comparingLong(User::getId));
 
-            log.info("Friends list retrieved for user: User={}, Friends={}", user, friendsList);
-            return ResponseEntity.ok(friendsList);
+            log.info("Friends list retrieved for user: User={}, Friends={}", user, sortedFriendsList);
+            return ResponseEntity.ok(new LinkedHashSet<>(sortedFriendsList));
         } catch (UserNotFoundException e) {
             log.warn("User not found: userId={}", userId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found", e);
