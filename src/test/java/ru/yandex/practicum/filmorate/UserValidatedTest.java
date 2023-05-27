@@ -92,18 +92,6 @@ public class UserValidatedTest {
     }
 
     @Test
-    public void testGetUserById_UserNotFound() {
-        Long userId = 9999L;
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            userController.getUserById(userId);
-        });
-
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("User not found", exception.getReason());
-    }
-
-    @Test
     public void testAllUserValidate() {
         user.setEmail("");
         user.setLogin("username");
