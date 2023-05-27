@@ -13,8 +13,7 @@ import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/users")
@@ -52,16 +51,17 @@ public class UserController {
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public void addFriend(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
-
+    public ResponseEntity<Void> addFriend(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
         User user = userService.getUserById(userId);
         User friend = userService.getUserById(friendId);
 
         if (user != null && friend != null) {
             userService.addFriend(user, friend);
             log.info("Друг добавлен: User={}, Friend={}", user, friend);
+            return ResponseEntity.ok().build();
         } else {
             log.warn("Пользователь или друг не найден: userId={}, friendId={}", userId, friendId);
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -71,21 +71,26 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public Set<User> getFriendsList(@PathVariable("id") Long userId) {
-        User user = userService.getUserById(userId);
-        if (user != null) {
+    public ResponseEntity<Set<User>> getFriendsList(@PathVariable("id") Long userId) {
+        try {
+            User user = userService.getUserById(userId);
             Set<User> friendsList = userService.getFriendsList(user);
+
+            List<User> sortedFriendsList = new ArrayList<>(friendsList);
+            sortedFriendsList.sort(Comparator.comparingInt(User::getId));
+
             log.info("Friends list retrieved for user: User={}, Friends={}", user, friendsList);
-            return friendsList;
-        } else {
+            return ResponseEntity.ok(friendsList);
+        } catch (UserNotFoundException e) {
             log.warn("User not found: userId={}", userId);
-            return Collections.emptySet();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found", e);
         }
     }
 
+
     @GetMapping("/{id}/friends/common/{otherId}")
-    public Set<User> getListMutualFriends(@PathVariable("id") Long userId,
-                                          @PathVariable("otherId") Long otherId) {
+    public ResponseEntity<Set<User>> getListMutualFriends(@PathVariable("id") Long userId,
+                                                          @PathVariable("otherId") Long otherId) {
         User user = userService.getUserById(userId);
         User otherUser = userService.getUserById(otherId);
 
@@ -93,10 +98,10 @@ public class UserController {
             Set<User> mutualFriends = userService.getListMutualFriends(user, otherUser);
             log.info("Mutual friends retrieved: User={}, OtherUser={}, MutualFriends={}",
                     user, otherUser, mutualFriends);
-            return mutualFriends;
+            return ResponseEntity.ok(mutualFriends);
         } else {
             log.warn("User(s) not found: userId={}, otherId={}", userId, otherId);
-            return Collections.emptySet();
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -106,21 +111,23 @@ public class UserController {
             User user = userService.getUserById(userId);
             return ResponseEntity.ok(user);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public void removeFriend(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
+    public ResponseEntity<?> removeFriend(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
         User user = userService.getUserById(userId);
         User friend = userService.getUserById(friendId);
 
         if (user != null && friend != null) {
             userService.removeFriend(user, friend);
             log.info("Friend removed: User={}, Friend={}", user, friend);
+            return ResponseEntity.ok().build();
         } else {
             log.warn("User or friend not found: userId={}, friendId={}", userId, friendId);
+            return ResponseEntity.notFound().build();
         }
     }
 }

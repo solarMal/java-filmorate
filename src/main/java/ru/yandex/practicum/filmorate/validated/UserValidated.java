@@ -45,8 +45,6 @@ public class UserValidated {
         }
     }
 
-
-
     public void allUserValidate(User user) {
         emailValidation(user);
         loginValidation(user);

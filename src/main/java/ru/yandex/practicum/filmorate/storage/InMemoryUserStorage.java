@@ -28,7 +28,9 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public ResponseEntity<User> createUser(User user) {
         try {
-            user.setId(nextUserId++);
+            if (user.getId() == 0) {
+                user.setId(nextUserId++);
+            }
             userValidated.allUserValidate(user);
             if (users.contains(user)) {
                 throw new UserAlreadyExistException("User already exists");
@@ -41,7 +43,6 @@ public class InMemoryUserStorage implements UserStorage {
             throw new IncorrectParameterException(exception.getMessage());
         }
     }
-
 
     @Override
     public ResponseEntity<?> updateUser(User user) {
