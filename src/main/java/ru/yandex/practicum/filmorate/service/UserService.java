@@ -7,12 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import ru.yandex.practicum.filmorate.controller.ErrorHandler;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exceptions.InvalidLoginException;
-import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.ErrorResponse;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -49,7 +46,7 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<?> updateUser(User user){
+    public ResponseEntity<?> updateUser(User user) {
         userStorage.updateUser(user);
         log.info("User update: {}", user);
         return ResponseEntity.status(HttpStatus.OK).body(user);
@@ -81,7 +78,7 @@ public class UserService {
         long friendId = friend.getId();
         long userId = user.getId();
 
-        if (user.getFriendsId().contains(friendId)){
+        if (user.getFriendsId().contains(friendId)) {
             if (user.getFriendsId().remove(friendId)) {
                 friend.getFriendsId().remove(userId);
                 log.info("Friend removed: User={}, Friend={}", user, friend);
@@ -104,7 +101,7 @@ public class UserService {
         return friendsList;
     }
 
-    public Set<User> getListMutualFriends(User user, User otherUser){
+    public Set<User> getListMutualFriends(User user, User otherUser) {
         Set<User> mutualFriends = new HashSet<>();
         for (Long userId : user.getFriendsId()){
             for (Long otherUserId : otherUser.getFriendsId()){
