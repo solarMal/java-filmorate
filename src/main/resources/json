@@ -1,0 +1,21 @@
+{
+    "id": 1,
+  "name": "Название фильма",
+  "description": "Описание фильма",
+  "releaseDate": "2023-05-18",
+  "duration": 120
+}
+
+
+
+{
+  "id": 1,
+  "login": "john_doe",
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "birthday": "1990-01-01"
+}
+
+http://localhost:8080/users/1/createFriendshipRequest/2
+http://localhost:8080/users/1/friends
+http://localhost:8080/users/2/acceptfriendshiprequest/1
