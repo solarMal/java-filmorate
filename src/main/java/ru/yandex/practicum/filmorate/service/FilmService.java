@@ -26,6 +26,10 @@ public class FilmService {
         this.filmStorage = filmStorage;
     }
 
+    public FilmService() {
+
+    }
+
     public ResponseEntity<?> createFilm(Film film) {
         return filmStorage.createFilm(film);
     }

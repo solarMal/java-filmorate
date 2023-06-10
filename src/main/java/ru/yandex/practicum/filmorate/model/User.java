@@ -29,11 +29,21 @@ public class User {
 
     private Set<Long> friendsId = new HashSet<>();
 
-    public User(int id, String email, String login, String name, LocalDate birthday) {
-        this.id = id;
+    Set<Long> friendshipRequests = new HashSet<>();
+
+    public User(int x, String email, String login, String name, LocalDate birthday) {
+        this.id = x;
         this.email = email;
         this.login = login;
         this.name = name;
         this.birthday = birthday;
     }
+
+    public User(int x, String email, String login, LocalDate birthday) {
+        this.id = x;
+        this.email = email;
+        this.login = login;
+        this.birthday = birthday;
+    }
+
 }

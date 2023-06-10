@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exceptions.InvalidFriendshipRequestException;
 import ru.yandex.practicum.filmorate.exceptions.InvalidLoginException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -57,23 +58,6 @@ public class UserService {
         return new ResponseEntity<>(userStorage.getUsers(), HttpStatus.OK);
     }
 
-
-    public void addFriend(User user, User friend) {
-        if (user.getFriendsId().contains((long) friend.getId())) {
-            return;
-        }
-
-        if (user.getFriendsId().isEmpty()) {
-            user.setFriendsId(new HashSet<>());
-        }
-        if (friend.getFriendsId().isEmpty()) {
-            friend.setFriendsId(new HashSet<>());
-        }
-
-        user.getFriendsId().add((long) friend.getId());
-        friend.getFriendsId().add((long) user.getId());
-    }
-
     public void removeFriend(User user, User friend) {
         long friendId = friend.getId();
         long userId = user.getId();
@@ -112,5 +96,43 @@ public class UserService {
             }
         }
         return mutualFriends;
+    }
+
+    public void createFriendshipRequest(User user, User friend) {
+        if (user.getFriendsId().contains((long) friend.getId())) {
+            return;
+        }
+
+        if (user.getFriendshipRequests().contains((long) friend.getId())) {
+            return;
+        }
+
+        user.getFriendshipRequests().add((long) friend.getId());
+    }
+
+    public void acceptFriendShipRequest(User user, User friend){
+        if (!friend.getFriendshipRequests().contains((long) user.getId())) {
+            throw new InvalidFriendshipRequestException("No friendship request from user " + user.getId());
+        }
+
+        friend.getFriendshipRequests().remove((long) user.getId());
+
+        addFriend(user, friend);
+    }
+
+    private void addFriend(User user, User friend) {
+        if (user.getFriendsId().contains((long) friend.getId())) {
+            return;
+        }
+
+        if (user.getFriendsId().isEmpty()) {
+            user.setFriendsId(new HashSet<>());
+        }
+        if (friend.getFriendsId().isEmpty()) {
+            friend.setFriendsId(new HashSet<>());
+        }
+
+        user.getFriendsId().add((long) friend.getId());
+        friend.getFriendsId().add((long) user.getId());
     }
 }

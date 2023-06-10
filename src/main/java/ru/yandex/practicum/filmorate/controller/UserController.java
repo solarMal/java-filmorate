@@ -50,20 +50,47 @@ public class UserController {
         }
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
-    public ResponseEntity<Void> addFriend(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
+//    @PutMapping("/{id}/friends/{friendId}")
+//    public ResponseEntity<Void> addFriend(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
+//        User user = userService.getUserById(userId);
+//        User friend = userService.getUserById(friendId);
+//
+//        if (user != null && friend != null) {
+//            userService.addFriend(user, friend);
+//            log.info("Друг добавлен: User={}, Friend={}", user, friend);
+//            return ResponseEntity.ok().build();
+//        } else {
+//            log.warn("Пользователь или друг не найден: userId={}, friendId={}", userId, friendId);
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+
+    @PutMapping("/{id}/createFriendshipRequest/{friendId}")
+    public ResponseEntity<Void> createFriendshipRequest(@PathVariable("id") Long userId,
+                                                        @PathVariable("friendId") Long friendId) {
         User user = userService.getUserById(userId);
         User friend = userService.getUserById(friendId);
 
-        if (user != null && friend != null) {
-            userService.addFriend(user, friend);
-            log.info("Друг добавлен: User={}, Friend={}", user, friend);
-            return ResponseEntity.ok().build();
-        } else {
-            log.warn("Пользователь или друг не найден: userId={}, friendId={}", userId, friendId);
-            return ResponseEntity.notFound().build();
-        }
+        userService.createFriendshipRequest(user, friend);
+
+        log.info("Friendship request created: User={}, Friend={}", user.getId(), friend.getId());
+
+        return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{id}/acceptfriendshiprequest/{friendId}")
+    public ResponseEntity<Void> acceptFriendshipRequest(@PathVariable("id") Long userId,
+                                                        @PathVariable("friendId") Long friendId) {
+        User user = userService.getUserById(userId);
+        User friend = userService.getUserById(friendId);
+
+        userService.acceptFriendShipRequest(user, friend);
+
+        log.info("Friendship request accepted: User={}, Friend={}", user.getId(), friend.getId());
+
+        return ResponseEntity.ok().build();
+    }
+
 
     @GetMapping
     public ResponseEntity<?> getAllUsers() {

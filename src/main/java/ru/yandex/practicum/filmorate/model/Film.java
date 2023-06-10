@@ -25,6 +25,10 @@ public class Film {
     @Positive(message = "Duration must be a positive value")
     private int duration;
 
+    FilmGenre filmGenre;
+
+    FilmMPA filmMPA;
+
     Set<Long> filmLikeByUserId = new HashSet<>();
 
 }
