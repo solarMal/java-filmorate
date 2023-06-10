@@ -8,6 +8,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -25,19 +27,13 @@ public class User {
     @PastOrPresent(message = "Дата рождения не может быть пустой")
     private LocalDate birthday;
 
-    public User(int x, String email, String login, String name, LocalDate birthday) {
-        this.id = x;
+    private Set<Long> friendsId = new HashSet<>();
+
+    public User(int id, String email, String login, String name, LocalDate birthday) {
+        this.id = id;
         this.email = email;
         this.login = login;
         this.name = name;
         this.birthday = birthday;
     }
-
-    public User(int x, String email, String login, LocalDate birthday) {
-        this.id = x;
-        this.email = email;
-        this.login = login;
-        this.birthday = birthday;
-    }
-
 }

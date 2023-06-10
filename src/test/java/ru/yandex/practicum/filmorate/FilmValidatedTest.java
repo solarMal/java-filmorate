@@ -4,29 +4,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.validated.FilmValidated;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class FilmServiceTest {
-    private FilmService filmService;
+public class FilmValidatedTest {
+    private FilmValidated filmValidated;
     private Film film;
 
     @BeforeEach
     public void setup() {
-        filmService = new FilmService();
+        filmValidated = new FilmValidated();
         film = new Film();
     }
 
     @Test
     public void testFilmNameCannotBeEmptyValidation() {
-        film.setName(""); // Empty film name
+        film.setName("");
 
         assertThrows(ValidationException.class, () -> {
-            filmService.filmNameCannotBeEmptyValidation(film);
+            filmValidated.filmNameCannotBeEmptyValidation(film);
         });
     }
 
@@ -38,7 +38,7 @@ public class FilmServiceTest {
                 "слишком длинное описание слишком длинное описание слишком длинное описание ");
 
         assertThrows(ValidationException.class, () -> {
-            filmService.maxLengthDescriptionValidation(film);
+            filmValidated.maxLengthDescriptionValidation(film);
         });
     }
 
@@ -48,7 +48,7 @@ public class FilmServiceTest {
         film.setReleaseDate(releaseDate);
 
         assertThrows(ValidationException.class, () -> {
-            filmService.releaseDateValidation(film);
+            filmValidated.releaseDateValidation(film);
         });
     }
 
@@ -57,7 +57,7 @@ public class FilmServiceTest {
         film.setDuration(-1);
 
         assertThrows(ValidationException.class, () -> {
-            filmService.durationValidation(film);
+            filmValidated.durationValidation(film);
         });
     }
 
@@ -72,7 +72,7 @@ public class FilmServiceTest {
         film.setDuration(-1);
 
         assertThrows(ValidationException.class, () -> {
-            filmService.validateAll(film);
+            filmValidated.validateAll(film);
         });
     }
 }
