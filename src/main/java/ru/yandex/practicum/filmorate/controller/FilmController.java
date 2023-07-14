@@ -67,8 +67,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<Film>> getPopularFilms(@RequestParam(value = "count"
-            , required = false, defaultValue = "10") int count) {
+    public ResponseEntity<List<Film>> getPopularFilms(@RequestParam(value = "count", required = false,
+            defaultValue = "10") int count) {
         List<Film> films = filmDbStorage.getPopularFilms(count);
         if (films.isEmpty()) {
             return ResponseEntity.notFound().build();
