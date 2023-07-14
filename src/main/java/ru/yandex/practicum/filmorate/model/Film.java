@@ -47,7 +47,8 @@ public class Film {
     public Film() {
     }
 
-    public Film(int id, @NotBlank(message = "Name is required") String name,
+    public Film(int id,
+                @NotBlank(message = "Name is required") String name,
                 @NotNull(message = "Release date is required") LocalDate releaseDate,
                 String description,
                 @Positive(message = "Duration must be a positive value") int duration,
