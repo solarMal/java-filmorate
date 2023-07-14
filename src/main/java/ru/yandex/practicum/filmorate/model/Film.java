@@ -31,8 +31,7 @@ public class Film {
     private int duration;
 
     @ManyToMany
-    @JoinTable(name = "FilmGenre",
-            joinColumns = @JoinColumn(name = "film_id"),
+    @JoinTable(name = "FilmGenre", joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private List<FilmGenre> genres;
 
