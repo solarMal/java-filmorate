@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,17 +20,18 @@ import java.util.*;
 public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
+
     public UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("UserDbStorage")UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
 
     public User getUserById(Long userId) {
         for (User user : userStorage.getUsers()) {
-            if (user.getId() == userId) {
+            if (user.getId().equals(userId)) {
                 return user;
             }
         }
@@ -59,20 +61,22 @@ public class UserService {
 
 
     public void addFriend(User user, User friend) {
-        if (user.getFriendsId().contains((long) friend.getId())) {
+        long userId = user.getId();
+        long friendId = friend.getId();
+
+        if (user.getFriendsId().contains(friendId)) {
             return;
         }
 
-        if (user.getFriendsId().isEmpty()) {
-            user.setFriendsId(new HashSet<>());
-        }
         if (friend.getFriendsId().isEmpty()) {
             friend.setFriendsId(new HashSet<>());
         }
 
-        user.getFriendsId().add((long) friend.getId());
-        friend.getFriendsId().add((long) user.getId());
+        friend.getFriendsId().add(userId);
+
+        log.info("Запрос на добавление в друзья отправлен: userId={}, friendId={}", userId, friendId);
     }
+
 
     public void removeFriend(User user, User friend) {
         long friendId = friend.getId();

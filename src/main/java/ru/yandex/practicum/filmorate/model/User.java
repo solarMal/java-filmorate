@@ -1,7 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 
 import javax.validation.constraints.Email;
@@ -14,7 +17,9 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 public class User {
-    private int id;
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @NotBlank(message = "Логин не может быть пустым")
     private String login;
@@ -27,7 +32,14 @@ public class User {
     @PastOrPresent(message = "Дата рождения не может быть пустой")
     private LocalDate birthday;
 
+    @ManyToMany
+    @JoinTable(name = "Friend",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
     private Set<Long> friendsId = new HashSet<>();
+
+    private Set<Long> friendshipRequests = new HashSet<>();
 
     public User(int id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
@@ -36,4 +48,5 @@ public class User {
         this.name = name;
         this.birthday = birthday;
     }
+
 }

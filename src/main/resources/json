@@ -16,6 +16,12 @@
   "birthday": "1990-01-01"
 }
 
+http://localhost:8080/films/1/likes/1
+
+http://localhost:8080/users/1/friends/2
+http://localhost:8080/users/2/mutual-friends/3
+
 http://localhost:8080/users/1/createFriendshipRequest/2
-http://localhost:8080/users/1/friends
-http://localhost:8080/users/2/acceptfriendshiprequest/1
+http://localhost:8080/users/2/friends/1
+
+jdbc:h2:file:D:/dev/java-filmorateOld/db/filmorate

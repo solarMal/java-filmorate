@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Set;
+
 
 public interface UserStorage {
     ResponseEntity<?> createUser(User user);
