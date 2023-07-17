@@ -12,12 +12,13 @@
 	<groupId>ru.yandex.practicum</groupId>
 	<artifactId>filmorate</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>filmorate</name>
+	<name>java-filmorateOld</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
 	<dependencies>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -66,21 +67,11 @@
 			<version>2.14.0</version>
 		</dependency>
 
-
-
-<!--		<dependency>-->
-<!--			<groupId>com.h2database</groupId>-->
-<!--			<artifactId>h2</artifactId>-->
-<!--			<version>2.1.214</version>-->
-<!--		</dependency>-->
-
 		<dependency>
 			<groupId>javax.persistence</groupId>
 			<artifactId>javax.persistence-api</artifactId>
 			<version>2.2</version>
 		</dependency>
-
-
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -92,7 +83,6 @@
 			<artifactId>jakarta.persistence-api</artifactId>
 			<version>3.0.0</version>
 		</dependency>
-
 
 	</dependencies>
 
