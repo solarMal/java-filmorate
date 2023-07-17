@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.UserController;
@@ -21,7 +22,7 @@ public class FilmService {
     public FilmStorage filmStorage;
 
     @Autowired
-    public FilmService(UserService userService, FilmStorage filmStorage) {
+    public FilmService(UserService userService, @Qualifier("FilmDbStorage") FilmStorage filmStorage) {
         this.userService = userService;
         this.filmStorage = filmStorage;
     }
