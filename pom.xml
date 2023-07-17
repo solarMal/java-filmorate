@@ -12,7 +12,7 @@
 	<groupId>ru.yandex.practicum</groupId>
 	<artifactId>filmorate</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>java-filmorateOld</name>
+	<name>filmorate</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
@@ -50,7 +50,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.20</version>
+			<version>1.18.24</version>
 			<scope>provided</scope>
 		</dependency>
 
