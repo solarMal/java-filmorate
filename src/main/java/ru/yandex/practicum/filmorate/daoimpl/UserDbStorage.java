@@ -92,6 +92,34 @@ public class UserDbStorage implements UserStorage {
         return ResponseEntity.ok(users);
     }
 
+    @Override
+    public Set<User> getUsers() {
+        String userSql = "SELECT * FROM Users";
+        List<User> userList = jdbcTemplate.query(userSql, (rs, rowNum) -> {
+            User user = new User();
+            user.setId(rs.getInt("id"));
+            user.setLogin(rs.getString("login"));
+            user.setName(rs.getString("name"));
+            user.setEmail(rs.getString("email"));
+            user.setBirthday(rs.getDate("birthday").toLocalDate());
+
+            // Получение списка запросов в друзья
+            String requestSql = "SELECT user_id FROM Friendship_request WHERE friend_id = ?";
+            List<Long> requestIds = jdbcTemplate.queryForList(requestSql, Long.class, user.getId());
+            Set<Long> requestsSet = new HashSet<>(requestIds);
+            user.setFriendshipRequests(requestsSet);
+
+            // Получение списка друзей
+            String friendSql = "SELECT friend_id FROM Friend WHERE user_id = ?";
+            List<Long> friendIds = jdbcTemplate.queryForList(friendSql, Long.class, user.getId());
+            Set<Long> friendsSet = new HashSet<>(friendIds);
+            user.setFriendsId(friendsSet);
+
+            return user;
+        });
+        return new HashSet<>(userList);
+    }
+
     public void createFriendshipRequest(User user, User friend) throws Exception {
         if (user.getId().equals(friend.getId())) {
             throw new Exception("нельзя добавить в друзья себя");

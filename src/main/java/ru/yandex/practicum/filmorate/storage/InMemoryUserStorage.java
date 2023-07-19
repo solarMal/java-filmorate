@@ -82,4 +82,9 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("количество пользователей в текущий момент: {}", users.size());
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
+
+    @Override
+    public Set<User> getUsers() {
+        return users;
+    }
 }
