@@ -65,7 +65,7 @@ public class FilmDbStorage implements FilmStorage {
             if (genres != null) {
                 for (FilmGenre genre : genres) {
                     Integer genreId = genre.getId();
-                    if (genreId.equals(0)){
+                    if (genreId.equals(0)) {
                         return null;
                     }
                     jdbcTemplate.update(insertFilmGenreSql, filmId, genreId);
