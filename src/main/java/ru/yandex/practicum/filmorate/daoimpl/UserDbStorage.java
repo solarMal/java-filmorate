@@ -2,11 +2,13 @@ package ru.yandex.practicum.filmorate.daoimpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exceptions.UserExistsException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -33,6 +35,11 @@ public class UserDbStorage implements UserStorage {
     @Override
     public ResponseEntity<User> createUser(User user) {
         userValidated.allUserValidate(user);
+
+        if (userExists(user.getLogin())) {
+            throw new UserExistsException("Пользователь с таким логином уже существует");
+        }
+
         user.setId(nextUserId++);
 
         String sql = "INSERT INTO users (id, login, name, email, birthday) VALUES (?, ?, ?, ?, ?)";
@@ -46,13 +53,11 @@ public class UserDbStorage implements UserStorage {
         userValidated.allUserValidate(user);
         int userId = user.getId();
 
-        // Проверка, существует ли пользователь с указанным идентификатором в базе данных
         User existingUser = getUserById((long)userId);
         if (existingUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
-        // Продолжить обновление пользователя
         String sql = "UPDATE users SET login = ?,name = ? ,email = ?, birthday = ? WHERE id = ?";
         jdbcTemplate.update(sql, user.getLogin(), user.getName(), user.getEmail(), user.getBirthday(), userId);
         return ResponseEntity.ok().body(user);
@@ -92,28 +97,28 @@ public class UserDbStorage implements UserStorage {
         return null;
     }
 
-//    public void createFriendshipRequest(User user, User friend) throws Exception {
-//        if (user.getId().equals(friend.getId())){
-//            throw new Exception("нельзя добавить в друзья себя");
-//        }
-//
-//        if (user.getFriendsId().contains((long) friend.getId())) {
-//            return;
-//        }
-//
-//        if (user.getFriendshipRequests().contains((long) friend.getId())) {
-//            return;
-//        }
-//
-//        String insertSql = "INSERT INTO Friendship_request (user_id, friend_id) VALUES (?, ?)";
-//        try {
-//            jdbcTemplate.update(insertSql, user.getId(), friend.getId());
-//
-//            friend.getFriendshipRequests().add((long) user.getId());
-//        } catch (DataAccessException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public void createFriendshipRequest(User user, User friend) throws Exception {
+        if (user.getId().equals(friend.getId())){
+            throw new Exception("нельзя добавить в друзья себя");
+        }
+
+        if (user.getFriendsId().contains((long) friend.getId())) {
+            return;
+        }
+
+        if (user.getFriendshipRequests().contains((long) friend.getId())) {
+            return;
+        }
+
+        String insertSql = "INSERT INTO Friendship_request (user_id, friend_id) VALUES (?, ?)";
+        try {
+            jdbcTemplate.update(insertSql, user.getId(), friend.getId());
+
+            friend.getFriendshipRequests().add((long) user.getId());
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void deleteUser(int userId) {
         String sql = "DELETE FROM users WHERE id = ?";
@@ -121,6 +126,12 @@ public class UserDbStorage implements UserStorage {
     }
 
     public void acceptFriendshipRequest(User user, User friend) {
+        if (user.getFriendsId().contains((long) friend.getId())) {
+            log.info("Друг {} уже присутствует в списке друзей пользователя {}. Отмена операции.",
+                    friend.getId(), user.getId());
+            return;
+        }
+
         user.getFriendsId().add((long) friend.getId());
 
         String deleteSql = "DELETE FROM Friendship_request WHERE user_id = ? AND friend_id = ?";
@@ -133,6 +144,10 @@ public class UserDbStorage implements UserStorage {
     }
 
     private void addFriend(User user, User friend) {
+        if (friend.getFriendsId().contains((long) user.getId())) {
+            throw new IllegalArgumentException("User is already a friend.");
+        }
+
         friend.getFriendsId().add((long) user.getId());
     }
 
@@ -243,5 +258,11 @@ public class UserDbStorage implements UserStorage {
         log.info("Количество общих друзей: {}", mutualFriends.size());
 
         return mutualFriends;
+    }
+
+    private boolean userExists(String login) {
+        String selectUserSql = "SELECT COUNT(*) FROM users WHERE login = ?";
+        int count = jdbcTemplate.queryForObject(selectUserSql, Integer.class, login);
+        return count > 0;
     }
 }

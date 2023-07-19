@@ -12,9 +12,10 @@ public class UserValidated {
     private static final Logger log = LoggerFactory.getLogger(UserValidated.class);
 
     public void emailValidation(User user) {
-        if (user.getEmail().isEmpty() || !user.getEmail().contains("@")) {
-            log.warn("электронная почта не может быть пустой и должна содержать символ @");
-            throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
+        String email = user.getEmail();
+        if (email.isEmpty() || !email.contains("@") || countOccurrences(email, '@') > 1) {
+            log.warn("Электронная почта не может быть пустой, должна содержать символ @ и не должна содержать более одного символа @");
+            throw new ValidationException("Электронная почта не может быть пустой, должна содержать символ @ и не должна содержать более одного символа @");
         }
     }
 
@@ -43,6 +44,16 @@ public class UserValidated {
             log.warn("Дата рождения не может быть в будущем");
             throw new ValidationException("Дата рождения не может быть в будущем");
         }
+    }
+
+    private int countOccurrences(String text, char target) {
+        int count = 0;
+        for (char c : text.toCharArray()) {
+            if (c == target) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public void allUserValidate(User user) {

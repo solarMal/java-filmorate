@@ -39,6 +39,24 @@ public class UserValidatedTest {
         assertThrows(ValidationException.class, () -> {
             userValidated.emailValidation(user);
         });
+
+        user.setEmail("invalidemail");
+
+        assertThrows(ValidationException.class, () -> {
+            userValidated.emailValidation(user);
+        });
+
+        user.setEmail("invalid@@email.com");
+
+        assertThrows(ValidationException.class, () -> {
+            userValidated.emailValidation(user);
+        });
+
+        user.setEmail("validemail@example.com");
+
+        assertThrows(ValidationException.class, () -> {
+            userValidated.emailValidation(user);
+        });
     }
 
     @Test

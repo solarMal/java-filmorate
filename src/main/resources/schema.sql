@@ -67,18 +67,3 @@ CREATE TABLE IF NOT EXISTS filmLike (
   FOREIGN KEY (filmId) REFERENCES Film(id),
   FOREIGN KEY (userId) REFERENCES Users(id)
 );
-
-INSERT INTO Genre (name) VALUES
-  ('Комедия'),
-  ('Драма'),
-  ('Мультфильм'),
-  ('Триллер'),
-  ('Документальный'),
-  ('Боевик');
-
-INSERT INTO FilmMPA (name) VALUES
-  ('G'),
-  ('PG'),
-  ('PG-13'),
-  ('R'),
-  ('NC-17');

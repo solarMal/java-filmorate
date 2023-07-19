@@ -36,9 +36,14 @@ public class FilmDbStorage implements FilmStorage {
     public ResponseEntity<?> createFilm(Film film) {
         try {
             filmValidated.validateAll(film);
+
+            if (filmExists(film)) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Фильм с такими характеристиками уже существует");
+            }
+
             film.setId(nextFilmId++);
 
-            // Вставка записи в таблицу Film
             String insertFilmSql = "INSERT INTO Film (name, releaseDate, description, duration, film_mpa_id) " +
                     "VALUES (?, ?, ?, ?, ?)";
 
@@ -56,12 +61,17 @@ public class FilmDbStorage implements FilmStorage {
 
             int filmId = jdbcInsert.executeAndReturnKey(filmParams).intValue();
 
-            if (film.getGenres() != null) {
-                for (FilmGenre genre : film.getGenres()) {
-                    jdbcTemplate.update(insertFilmGenreSql, filmId, genre.getId());
+            List<FilmGenre> genres = film.getGenres();
+            if (genres != null) {
+                for (FilmGenre genre : genres) {
+                    Integer genreId = genre.getId();
+                    if (genreId.equals(0)){
+                        return null;
+                    }
+                    jdbcTemplate.update(insertFilmGenreSql, filmId, genreId);
 
                     String selectGenreNameSql = "SELECT name FROM Genre WHERE id = ?";
-                    String genreName = jdbcTemplate.queryForObject(selectGenreNameSql, String.class, genre.getId());
+                    String genreName = jdbcTemplate.queryForObject(selectGenreNameSql, String.class, genreId);
                     genre.setName(genreName);
                 }
             }
@@ -70,7 +80,6 @@ public class FilmDbStorage implements FilmStorage {
             String rating = jdbcTemplate.queryForObject(selectRatingSql, String.class, film.getMpa().getId());
             film.getMpa().setName(rating);
 
-            // Получение количества лайков фильма
             String selectLikeCountSql = "SELECT COUNT(*) FROM filmLike WHERE filmId = ?";
             Long likeCount = jdbcTemplate.queryForObject(selectLikeCountSql, Long.class, filmId);
             film.setFilmLikeByUserId(Collections.singleton(likeCount));
@@ -414,6 +423,12 @@ public class FilmDbStorage implements FilmStorage {
             genre.setName(rs.getString("name"));
             return genre;
         }, filmId);
+    }
+
+    private boolean filmExists(Film film) {
+        String selectFilmSql = "SELECT COUNT(*) FROM Film WHERE name = ? AND releaseDate = ?";
+        int count = jdbcTemplate.queryForObject(selectFilmSql, Integer.class, film.getName(), film.getReleaseDate());
+        return count > 0;
     }
 
 }
