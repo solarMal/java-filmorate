@@ -11,6 +11,4 @@ public interface UserStorage {
     ResponseEntity<?> updateUser(User user);
 
     ResponseEntity<?> getAllUsers();
-
-    Set<User> getUsers();
 }

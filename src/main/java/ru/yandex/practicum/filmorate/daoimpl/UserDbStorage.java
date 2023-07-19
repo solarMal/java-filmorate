@@ -92,13 +92,8 @@ public class UserDbStorage implements UserStorage {
         return ResponseEntity.ok(users);
     }
 
-    @Override
-    public Set<User> getUsers() {
-        return null;
-    }
-
     public void createFriendshipRequest(User user, User friend) throws Exception {
-        if (user.getId().equals(friend.getId())){
+        if (user.getId().equals(friend.getId())) {
             throw new Exception("нельзя добавить в друзья себя");
         }
 
