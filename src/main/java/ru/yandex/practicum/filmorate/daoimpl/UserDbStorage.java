@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.daoimpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exceptions.UserExistsException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validated.UserValidated;
@@ -38,6 +38,10 @@ public class UserDbStorage implements UserStorage {
 
         if (userExists(user.getLogin())) {
             throw new UserExistsException("Пользователь с таким логином уже существует");
+        }
+
+        if (emailExists(user.getEmail())){
+            throw new UserExistsException("Пользователь с таким email уже существует");
         }
 
         user.setId(nextUserId++);
@@ -120,58 +124,39 @@ public class UserDbStorage implements UserStorage {
         return new HashSet<>(userList);
     }
 
-    public void createFriendshipRequest(User user, User friend) throws Exception {
-        if (user.getId().equals(friend.getId())) {
-            throw new Exception("нельзя добавить в друзья себя");
+    public void acceptFriendshipRequest(User user, User friend) throws IllegalArgumentException,
+            ValidationException {
+        if (user.getId().equals(friend.getId())){
+            throw new ValidationException("Нельзя добавить себя в друзья");
         }
 
         if (user.getFriendsId().contains((long) friend.getId())) {
-            return;
+            log.info("Друг {} уже присутствует в списке друзей пользователя {}. Отмена операции.",
+                    friend.getId(), user.getId());
+            throw new ValidationException("Друг уже присутствует в списке друзей пользователя");
         }
 
-        if (user.getFriendshipRequests().contains((long) friend.getId())) {
-            return;
+        String insertSql = "INSERT INTO Friend (user_id, friend_id) VALUES (?, ?)";
+        jdbcTemplate.update(insertSql, user.getId(), friend.getId());
+
+            addFriend(user, friend);
+    }
+
+    private void addFriend(User user, User friend) throws IllegalArgumentException {
+        long userId = user.getId();
+        long friendId = friend.getId();
+
+        if (user.getFriendsId().contains(friendId)) {
+            String errorMessage = "Пользователь с ID " + friendId + " уже добавлен в друзья у пользователя с ID " + userId;
+            throw new IllegalArgumentException(errorMessage);
         }
 
-        String insertSql = "INSERT INTO Friendship_request (user_id, friend_id) VALUES (?, ?)";
-        try {
-            jdbcTemplate.update(insertSql, user.getId(), friend.getId());
-
-            friend.getFriendshipRequests().add((long) user.getId());
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
+        friend.getFriendsId().add(userId);
     }
 
     public void deleteUser(int userId) {
         String sql = "DELETE FROM users WHERE id = ?";
         jdbcTemplate.update(sql, userId);
-    }
-
-    public void acceptFriendshipRequest(User user, User friend) {
-        if (user.getFriendsId().contains((long) friend.getId())) {
-            log.info("Друг {} уже присутствует в списке друзей пользователя {}. Отмена операции.",
-                    friend.getId(), user.getId());
-            return;
-        }
-
-        user.getFriendsId().add((long) friend.getId());
-
-        String deleteSql = "DELETE FROM Friendship_request WHERE user_id = ? AND friend_id = ?";
-        jdbcTemplate.update(deleteSql, friend.getId(), user.getId());
-
-        String insertSql = "INSERT INTO Friend (user_id, friend_id) VALUES (?, ?)";
-        jdbcTemplate.update(insertSql, user.getId(), friend.getId());
-
-        addFriend(user, friend);
-    }
-
-    private void addFriend(User user, User friend) {
-        if (friend.getFriendsId().contains((long) user.getId())) {
-            throw new IllegalArgumentException("User is already a friend.");
-        }
-
-        friend.getFriendsId().add((long) user.getId());
     }
 
     public User getUserById(Long userId) {
@@ -286,6 +271,12 @@ public class UserDbStorage implements UserStorage {
     private boolean userExists(String login) {
         String selectUserSql = "SELECT COUNT(*) FROM users WHERE login = ?";
         int count = jdbcTemplate.queryForObject(selectUserSql, Integer.class, login);
+        return count > 0;
+    }
+
+    private boolean emailExists(String email) {
+        String checkEmailSql = "SELECT COUNT(*) FROM Users WHERE email = ?";
+        int count = jdbcTemplate.queryForObject(checkEmailSql, Integer.class, email);
         return count > 0;
     }
 }

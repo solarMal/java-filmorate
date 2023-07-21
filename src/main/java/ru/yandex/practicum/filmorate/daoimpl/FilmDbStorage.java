@@ -37,9 +37,15 @@ public class FilmDbStorage implements FilmStorage {
         try {
             filmValidated.validateAll(film);
 
-            if (filmExists(film)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Фильм с такими характеристиками уже существует");
+                        List<FilmGenre> genres = film.getGenres();
+            if (genres != null) {
+                for (FilmGenre genre : genres) {
+                    Integer genreId = genre.getId();
+                    if (genreId.equals(0)) {
+                        String errorMessage = "Неверный ID жанра: " + genreId;
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+                    }
+                }
             }
 
             film.setId(nextFilmId++);
@@ -61,12 +67,12 @@ public class FilmDbStorage implements FilmStorage {
 
             int filmId = jdbcInsert.executeAndReturnKey(filmParams).intValue();
 
-            List<FilmGenre> genres = film.getGenres();
             if (genres != null) {
                 for (FilmGenre genre : genres) {
                     Integer genreId = genre.getId();
                     if (genreId.equals(0)) {
-                        return null;
+                        String errorMessage = "Неверный ID жанра: " + genreId;
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
                     }
                     jdbcTemplate.update(insertFilmGenreSql, filmId, genreId);
 
@@ -87,8 +93,8 @@ public class FilmDbStorage implements FilmStorage {
             log.info("Фильм успешно вставлен в базу данных: {}", film);
 
         } catch (ValidationException exception) {
-            log.error("Ошибка при создании фильма: {}", exception.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(film);
+            ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(film);
@@ -98,6 +104,18 @@ public class FilmDbStorage implements FilmStorage {
     public ResponseEntity<?> updateFilm(Film updatedFilm) {
         try {
             filmValidated.validateAll(updatedFilm);
+
+            List<FilmGenre> genres = updatedFilm.getGenres();
+            if (genres != null) {
+                for (FilmGenre genre : genres) {
+                    Integer genreId = genre.getId();
+                    if (genreId.equals(0)) {
+                        String errorMessage = "Неверный ID жанра: " + genreId;
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+                    }
+                }
+            }
+
             int id = updatedFilm.getId();
 
             String updateSql = "UPDATE Film SET name = ?, description = ?, releaseDate = ?, duration = ?, film_mpa_id = ? WHERE id = ?";

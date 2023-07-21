@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.daoimpl.UserDbStorage;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Set;
@@ -36,26 +37,16 @@ public class UserDbStorageController {
         return userDbStorage.updateUser(user);
     }
 
-    @PutMapping("/{id}/createFriendshipRequest/{friendId}")
-    public ResponseEntity<Void> createFriendshipRequest(@PathVariable("id") Long userId,
-                                                        @PathVariable("friendId") Long friendId) throws Exception {
-        User user = userDbStorage.getUserById(userId);
-        User friend = userDbStorage.getUserById(friendId);
-
-        userDbStorage.createFriendshipRequest(user, friend);
-
-        log.info("Friendship request created: User={}, Friend={}", user.getId(), friend.getId());
-
-        return ResponseEntity.ok().build();
-    }
-
     @PutMapping("/{id}/friends/{friendId}")
-    public ResponseEntity<Void> acceptFriendshipRequest(@PathVariable("id") Long userId,
+    public ResponseEntity<?> acceptFriendshipRequest(@PathVariable("id") Long userId,
                                                         @PathVariable("friendId") Long friendId) {
         User user = userDbStorage.getUserById(userId);
         User friend = userDbStorage.getUserById(friendId);
-
-        userDbStorage.acceptFriendshipRequest(user, friend);
+        try {
+            userDbStorage.acceptFriendshipRequest(user, friend);
+        }catch (IllegalArgumentException | ValidationException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
 
         log.info("Friendship request accepted: User={}, Friend={}", user.getId(), friend.getId());
 

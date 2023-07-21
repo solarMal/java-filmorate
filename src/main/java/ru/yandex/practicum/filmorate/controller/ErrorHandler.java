@@ -46,4 +46,10 @@ public class ErrorHandler {
     public ErrorResponse handleInvalidLoginException(InvalidLoginException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidationException(ValidationException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }

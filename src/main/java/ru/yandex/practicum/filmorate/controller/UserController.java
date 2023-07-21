@@ -29,24 +29,14 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> createUser(@Validated @RequestBody User user) {
-        try {
             userService.addUser(user);
             log.info("User added: {}", user);
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
-        } catch (InvalidLoginException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create user");
-        }
     }
 
     @PutMapping()
     public ResponseEntity<?> updateUser(@RequestBody User user) {
-        try {
             return userService.updateUser(user);
-        } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found", e);
-        }
     }
 
     @PutMapping("/{id}/friend/{friendId}")
