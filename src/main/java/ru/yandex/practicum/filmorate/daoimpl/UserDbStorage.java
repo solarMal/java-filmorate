@@ -40,7 +40,7 @@ public class UserDbStorage implements UserStorage {
             throw new UserExistsException("Пользователь с таким логином уже существует");
         }
 
-        if (emailExists(user.getEmail())){
+        if (emailExists(user.getEmail())) {
             throw new UserExistsException("Пользователь с таким email уже существует");
         }
 
@@ -126,7 +126,7 @@ public class UserDbStorage implements UserStorage {
 
     public void acceptFriendshipRequest(User user, User friend) throws IllegalArgumentException,
             ValidationException {
-        if (user.getId().equals(friend.getId())){
+        if (user.getId().equals(friend.getId())) {
             throw new ValidationException("Нельзя добавить себя в друзья");
         }
 
