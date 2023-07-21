@@ -44,7 +44,7 @@ public class UserDbStorageController {
         User friend = userDbStorage.getUserById(friendId);
         try {
             userDbStorage.acceptFriendshipRequest(user, friend);
-        }catch (IllegalArgumentException | ValidationException e){
+        } catch (IllegalArgumentException | ValidationException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
