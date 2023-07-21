@@ -37,7 +37,7 @@ public class FilmDbStorage implements FilmStorage {
         try {
             filmValidated.validateAll(film);
 
-                        List<FilmGenre> genres = film.getGenres();
+            List<FilmGenre> genres = film.getGenres();
             if (genres != null) {
                 for (FilmGenre genre : genres) {
                     Integer genreId = genre.getId();
