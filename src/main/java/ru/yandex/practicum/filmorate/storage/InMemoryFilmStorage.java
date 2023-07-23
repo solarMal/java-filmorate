@@ -18,12 +18,12 @@ import java.util.List;
 @Validated
 public class InMemoryFilmStorage implements FilmStorage {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
-    private int nextFilmId = 1;
+    private long nextFilmId = 1;
     FilmValidated filmValidated = new FilmValidated();
     public List<Film> films = new ArrayList<>();
 
     @Override
-    public ResponseEntity<?> createFilm(Film film) {
+    public ResponseEntity<Film> createFilm(Film film) {
         try {
             filmValidated.validateAll(film);
             film.setId(nextFilmId++);
@@ -37,9 +37,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public ResponseEntity<?> updateFilm(Film updatedFilm) {
+    public ResponseEntity<Film> updateFilm(Film updatedFilm) {
         try {
-            int id = updatedFilm.getId();
+            long id = updatedFilm.getId();
             filmValidated.validateAll(updatedFilm);
             if (films.size() == 0) {
                 films.add(updatedFilm);
@@ -63,7 +63,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             }
             return ResponseEntity.ok(updatedFilm);
         } catch (ValidationException exception) {
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            return ResponseEntity.badRequest().body(updatedFilm);
         }
     }
 
@@ -74,7 +74,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(int filmId) {
+    public Film getFilmById(Long filmId) {
         if (films != null) {
             for (Film film : films) {
                 if (film.getId() == filmId) {

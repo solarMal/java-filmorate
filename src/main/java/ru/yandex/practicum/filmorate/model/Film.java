@@ -18,7 +18,7 @@ public class Film {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -49,7 +49,7 @@ public class Film {
     public Film() {
     }
 
-    public Film(int id,
+    public Film(Long id,
                 @NotBlank(message = "Name is required") String name,
                 @NotNull(message = "Release date is required") LocalDate releaseDate,
                 String description,

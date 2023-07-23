@@ -28,7 +28,7 @@ public class UserService {
     }
 
 
-    public User getUserById(Long userId) {
+    public User getUserById(long userId) {
         for (User user : userStorage.getUsers()) {
             if ((long)user.getId() == userId) {
                 return user;

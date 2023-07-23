@@ -20,7 +20,7 @@ import java.util.*;
 @Component("FilmDbStorage")
 public class FilmDbStorage implements FilmStorage {
     FilmValidated filmValidated = new FilmValidated();
-    private int nextFilmId = 1;
+    private long nextFilmId = 1;
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
@@ -33,7 +33,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public ResponseEntity<?> createFilm(Film film) {
+    public ResponseEntity<Film> createFilm(Film film) {
         try {
             filmValidated.validateAll(film);
 
@@ -43,7 +43,7 @@ public class FilmDbStorage implements FilmStorage {
                     Integer genreId = genre.getId();
                     if (genreId.equals(0)) {
                         String errorMessage = "Неверный ID жанра: " + genreId;
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(film);
                     }
                 }
             }
@@ -71,8 +71,7 @@ public class FilmDbStorage implements FilmStorage {
                 for (FilmGenre genre : genres) {
                     Integer genreId = genre.getId();
                     if (genreId.equals(0)) {
-                        String errorMessage = "Неверный ID жанра: " + genreId;
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(film);
                     }
                     jdbcTemplate.update(insertFilmGenreSql, filmId, genreId);
 
@@ -93,15 +92,14 @@ public class FilmDbStorage implements FilmStorage {
             log.info("Фильм успешно вставлен в базу данных: {}", film);
 
         } catch (ValidationException exception) {
-            ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(film);
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(film);
     }
 
     @Override
-    public ResponseEntity<?> updateFilm(Film updatedFilm) {
+    public ResponseEntity<Film> updateFilm(Film updatedFilm) {
         try {
             filmValidated.validateAll(updatedFilm);
 
@@ -110,13 +108,12 @@ public class FilmDbStorage implements FilmStorage {
                 for (FilmGenre genre : genres) {
                     Integer genreId = genre.getId();
                     if (genreId.equals(0)) {
-                        String errorMessage = "Неверный ID жанра: " + genreId;
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(updatedFilm);
                     }
                 }
             }
 
-            int id = updatedFilm.getId();
+            Long id = updatedFilm.getId();
 
             String updateSql = "UPDATE Film SET name = ?, description = ?, releaseDate = ?, duration = ?, film_mpa_id = ? WHERE id = ?";
             int rowsUpdated = jdbcTemplate.update(updateSql, updatedFilm.getName(), updatedFilm.getDescription(),
@@ -155,7 +152,7 @@ public class FilmDbStorage implements FilmStorage {
 
             return ResponseEntity.ok(updatedFilm);
         } catch (ValidationException exception) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(updatedFilm);
         }
     }
 
@@ -166,7 +163,7 @@ public class FilmDbStorage implements FilmStorage {
 
             List<Film> films = jdbcTemplate.query(selectFilmsSql, (rs, rowNum) -> {
                 Film film = new Film();
-                film.setId(rs.getInt("id"));
+                film.setId(rs.getLong("id"));
                 film.setName(rs.getString("name"));
                 film.setDescription(rs.getString("description"));
                 film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
@@ -208,7 +205,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(int filmId) {
+    public Film getFilmById(Long filmId) {
         try {
             String selectFilmSql = "SELECT f.*, m.name AS mpaName " +
                     "FROM Film f " +
@@ -217,7 +214,7 @@ public class FilmDbStorage implements FilmStorage {
 
             Film film = jdbcTemplate.queryForObject(selectFilmSql, (rs, rowNum) -> {
                 Film filmResult = new Film();
-                filmResult.setId(filmId); // Устанавливаем переданный ID фильма
+                filmResult.setId(filmId);
                 filmResult.setName(rs.getString("name"));
                 filmResult.setDescription(rs.getString("description"));
                 filmResult.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
@@ -267,7 +264,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public ResponseEntity<?> addFilmLike(long filmId, long userId) {
-        Film film = getFilmById((int) filmId);
+        Film film = getFilmById(filmId);
         User user = userDbStorage.getUserById(userId);
 
         if (film == null) {
@@ -289,7 +286,7 @@ public class FilmDbStorage implements FilmStorage {
             jdbcTemplate.update(insertSql, filmId, userId);
 
             // Retrieve updated film with likes
-            Film updatedFilm = getFilmById((int) filmId);
+            Film updatedFilm = getFilmById(filmId);
 
             log.info("Film like added. Film ID: {}, User ID: {}", filmId, userId);
             return ResponseEntity.ok(updatedFilm);
@@ -300,7 +297,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public ResponseEntity<?> removeFilmLike(long filmId, long userId) {
-        Film film = getFilmById((int) filmId);
+        Film film = getFilmById(filmId);
         User user = userDbStorage.getUserById(userId);
 
         if (film == null) {
@@ -346,7 +343,7 @@ public class FilmDbStorage implements FilmStorage {
 
         List<Film> films = jdbcTemplate.query(selectFilmsSql, (rs, rowNum) -> {
             Film filmResult = new Film();
-            filmResult.setId(rs.getInt("id"));
+            filmResult.setId(rs.getLong("id"));
             filmResult.setName(rs.getString("name"));
             filmResult.setDescription(rs.getString("description"));
             filmResult.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
@@ -431,7 +428,7 @@ public class FilmDbStorage implements FilmStorage {
         }, mpaId);
     }
 
-    private List<FilmGenre> getFilmGenresByFilmId(int filmId) {
+    private List<FilmGenre> getFilmGenresByFilmId(Long filmId) {
         String selectGenresSql = "SELECT g.id, g.name FROM Genre g " +
                 "JOIN FilmGenre fg ON g.id = fg.genre_id " +
                 "WHERE fg.film_id = ?";

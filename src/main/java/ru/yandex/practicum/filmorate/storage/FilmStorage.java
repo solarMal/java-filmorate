@@ -6,13 +6,13 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.util.List;
 
 public interface FilmStorage {
-     ResponseEntity<?> createFilm(Film film);
+     ResponseEntity<Film> createFilm(Film film);
 
-     ResponseEntity<?> updateFilm(Film updatedFilm);
+     ResponseEntity<Film> updateFilm(Film updatedFilm);
 
      ResponseEntity<List<Film>> getAllFilms();
 
-     Film getFilmById(int filmId);
+     Film getFilmById(Long filmId);
 
      List<Film> getFilms();
 

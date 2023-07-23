@@ -36,7 +36,7 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Film> getFilmById(@PathVariable("id") int id) {
+    public ResponseEntity<Film> getFilmById(@PathVariable("id") Long id) {
         Film film = filmService.filmStorage.getFilmById(id);
         if (film == null) {
             return ResponseEntity.notFound().build();

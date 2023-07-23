@@ -35,13 +35,13 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
-    public ResponseEntity<?> getAllFilms() {
+    public ResponseEntity<List<Film>> getAllFilms() {
         return filmStorage.getAllFilms();
     }
 
 
-    public ResponseEntity<?> addFilmLike(long filmId, long userId) {
-        Film film = filmStorage.getFilmById((int) filmId);
+    public ResponseEntity<?> addFilmLike(Long filmId, Long userId) {
+        Film film = filmStorage.getFilmById(filmId);
         User user = userService.getUserById(userId);
 
         if (film == null) {
@@ -64,7 +64,7 @@ public class FilmService {
     }
 
     public ResponseEntity<?> deleteFilmLike(long filmId, long userId) {
-        Film film = filmStorage.getFilmById((int) filmId);
+        Film film = filmStorage.getFilmById(filmId);
         User user = userService.getUserById(userId);
 
         if (film == null) {

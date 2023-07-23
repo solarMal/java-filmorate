@@ -40,7 +40,7 @@ public class FilmDbStorageController {
     }
 
     @GetMapping("/{filmId}")
-    public ResponseEntity<Film> getFilmById(@PathVariable int filmId) {
+    public ResponseEntity<Film> getFilmById(@PathVariable Long filmId) {
         Film film = filmDbStorage.getFilmById(filmId);
         if (film != null) {
             return ResponseEntity.ok(film);
