@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.UserController;
@@ -21,7 +22,7 @@ public class FilmService {
     public FilmStorage filmStorage;
 
     @Autowired
-    public FilmService(UserService userService, FilmStorage filmStorage) {
+    public FilmService(UserService userService, @Qualifier("FilmDbStorage") FilmStorage filmStorage) {
         this.userService = userService;
         this.filmStorage = filmStorage;
     }
@@ -34,13 +35,13 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
-    public ResponseEntity<?> getAllFilms() {
+    public ResponseEntity<List<Film>> getAllFilms() {
         return filmStorage.getAllFilms();
     }
 
 
-    public ResponseEntity<?> addFilmLike(long filmId, long userId) {
-        Film film = filmStorage.getFilmById((int) filmId);
+    public ResponseEntity<?> addFilmLike(Long filmId, Long userId) {
+        Film film = filmStorage.getFilmById(filmId);
         User user = userService.getUserById(userId);
 
         if (film == null) {
@@ -63,7 +64,7 @@ public class FilmService {
     }
 
     public ResponseEntity<?> deleteFilmLike(long filmId, long userId) {
-        Film film = filmStorage.getFilmById((int) filmId);
+        Film film = filmStorage.getFilmById(filmId);
         User user = userService.getUserById(userId);
 
         if (film == null) {

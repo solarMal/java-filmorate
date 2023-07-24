@@ -1,9 +1,26 @@
 package ru.yandex.practicum.filmorate.model;
 
-public enum FilmMPA {
-    G,
-    PG,
-    PG_13,
-    R,
-    NC_17
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.Data;
+
+@Data
+@Entity
+public class FilmMPA {
+    @Id
+    private Integer id;
+
+    private String name;
+
+    public FilmMPA() {
+    }
+
+    public FilmMPA(int id) {
+        this.id = id;
+    }
+
+    public FilmMPA(int id, String rating) {
+        this.id = id;
+        this.name = rating;
+    }
 }

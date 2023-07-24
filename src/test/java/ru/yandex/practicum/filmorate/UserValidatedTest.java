@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.UserController;
@@ -36,7 +37,25 @@ public class UserValidatedTest {
     public void testEmailValidation() {
         user.setEmail("");
 
-        assertThrows(ValidationException.class, () -> {
+        Assertions.assertThrows(ValidationException.class, () -> {
+            userValidated.emailValidation(user);
+        });
+
+        user.setEmail("invalidemail");
+
+        Assertions.assertThrows(ValidationException.class, () -> {
+            userValidated.emailValidation(user);
+        });
+
+        user.setEmail("invalid@@email.com");
+
+        Assertions.assertThrows(ValidationException.class, () -> {
+            userValidated.emailValidation(user);
+        });
+
+        user.setEmail("validemail@example.com");
+
+        Assertions.assertDoesNotThrow(() -> {
             userValidated.emailValidation(user);
         });
     }

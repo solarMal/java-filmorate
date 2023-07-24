@@ -2,13 +2,11 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.exceptions.InvalidLoginException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -16,13 +14,13 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import java.util.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 @Validated
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
     UserService userService;
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -30,27 +28,17 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> createUser(@Validated @RequestBody User user) {
-        try {
             userService.addUser(user);
             log.info("User added: {}", user);
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
-        } catch (InvalidLoginException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create user");
-        }
     }
 
     @PutMapping()
     public ResponseEntity<?> updateUser(@RequestBody User user) {
-        try {
             return userService.updateUser(user);
-        } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found", e);
-        }
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
+    @PutMapping("/{id}/friend/{friendId}")
     public ResponseEntity<Void> addFriend(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
         User user = userService.getUserById(userId);
         User friend = userService.getUserById(friendId);
@@ -131,3 +119,4 @@ public class UserController {
         }
     }
 }
+
