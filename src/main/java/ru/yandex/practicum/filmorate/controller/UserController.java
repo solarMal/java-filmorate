@@ -20,26 +20,7 @@ public class UserController {
 
     @PostMapping
     public User createUser(@RequestBody User user) throws ValidateException {
-        if (user == null) {
-            throw new ValidateException("Пользователь не может быть null");
-        }
-
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            throw new ValidateException("Email не может быть пустым и должен содержать символ '@'");
-        }
-
-        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            throw new ValidateException("Login не может быть пустым и не должен содержать пробелы");
-        }
-
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-
-        if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidateException("Дата рождения не может быть в будущем");
-        }
-
+        userValidate(user);
         user.setId(dynamicId++);
         users.put(user.getId(), user);
         log.info("Пользователь {} успешно создан", user);
@@ -48,10 +29,7 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@RequestBody User user) throws ValidateException {
-        if (user == null) {
-            throw new ValidateException("пользователь не может быть null");
-        }
-
+        userValidate(user);
         if (!users.containsKey(user.getId())) {
             log.warn("Пользователь с id {} не найден", user.getId());
             throw new ValidateException("Пользователь с id " + user.getId() + " не найден");
@@ -69,6 +47,28 @@ public class UserController {
         }
 
         return new ArrayList<>(users.values());
+    }
+
+    public void userValidate(User user) throws ValidateException {
+        if (user == null) {
+            throw new NullPointerException("Пользователь не может быть null");
+        }
+
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+            throw new ValidateException("Email не может быть пустым и должен содержать символ '@'");
+        }
+
+        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
+            throw new ValidateException("Login не может быть пустым и не должен содержать пробелы");
+        }
+
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+
+        if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now())) {
+            throw new ValidateException("Дата рождения не может быть в будущем");
+        }
     }
 
 }
