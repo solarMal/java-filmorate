@@ -2,20 +2,18 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
     private int dynamicId = 1;
-    Map<Integer, User> users = new HashMap<>();
+    Map<Long, User> users = new HashMap<>();
 
 
     @Override
@@ -39,6 +37,13 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("Пользователь с id {} обновлён", user.getId());
         return user;
     }
+
+    @Override
+    public User getUserById(long id) {
+        return Optional.ofNullable(users.get(id))
+                .orElseThrow(() -> new UserNotFoundException("пользователь не найден"));
+    }
+
 
     @Override
     public List<User> getUsers() {
