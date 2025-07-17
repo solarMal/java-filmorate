@@ -15,7 +15,6 @@ public class InMemoryUserStorage implements UserStorage {
     private int dynamicId = 1;
     Map<Long, User> users = new HashMap<>();
 
-
     @Override
     public User createUser(User user) {
         userValidate(user);
