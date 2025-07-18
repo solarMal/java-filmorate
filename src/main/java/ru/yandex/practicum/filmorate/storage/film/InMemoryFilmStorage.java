@@ -39,11 +39,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Set<Film> getAllFilms() {
+    public List<Film> getAllFilms() {
         if (films.isEmpty()) {
             throw new ValidateException("нет добавленных фильмов");
         }
-        return new HashSet<>(films.values());
+        return new ArrayList<>(films.values());
     }
 
     @Override
