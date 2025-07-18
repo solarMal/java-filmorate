@@ -23,4 +23,12 @@ public class Film {
     @Builder.Default
     private Set<Long> likes = new HashSet<>();
 
+    public Film(long id, String name, String description, LocalDate releaseDate, int duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+    }
+
 }
