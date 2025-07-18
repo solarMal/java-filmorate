@@ -2,20 +2,18 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
     int dynamicId = 1;
-    Map<Integer, Film> films = new HashMap<>();
+    Map<Long, Film> films = new HashMap<>();
 
     @Override
     public Film createFilm(Film film) {
@@ -31,23 +29,30 @@ public class InMemoryFilmStorage implements FilmStorage {
         filmValidate(film);
 
         if (!films.containsKey(film.getId())) {
-            throw new ValidateException("ошибка обновления фильма");
+            log.warn("Попытка обновить несуществующий фильм с id {}", film.getId());
+            throw new FilmNotFoundException("Фильм с id " + film.getId() + " не найден. Обновление невозможно");
         }
 
         films.put(film.getId(), film);
-        log.info("фильм успешно обновлён");
+        log.info("Фильм с id {} успешно обновлён", film.getId());
         return film;
     }
 
     @Override
-    public List<Film> getAllFilms() {
+    public Set<Film> getAllFilms() {
         if (films.isEmpty()) {
             throw new ValidateException("нет добавленных фильмов");
         }
-        return new ArrayList<>(films.values());
+        return new HashSet<>(films.values());
     }
 
-     public void filmValidate(Film film) throws ValidateException {
+    @Override
+    public Film getFilmById(long id) {
+        return Optional.ofNullable(films.get(id))
+                .orElseThrow(() -> new FilmNotFoundException("фильм с id " + id + " не найден"));
+    }
+
+    public void filmValidate(Film film) throws ValidateException {
         if (film == null) {
             throw new ValidateException("Фильм не может быть null");
         }

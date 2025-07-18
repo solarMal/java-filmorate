@@ -29,7 +29,7 @@ public class InMemoryUserStorage implements UserStorage {
         userValidate(user);
         if (!users.containsKey(user.getId())) {
             log.warn("Пользователь с id {} не найден", user.getId());
-            throw new ValidateException("Пользователь с id " + user.getId() + " не найден");
+            throw new UserNotFoundException("Пользователь с id " + user.getId() + " не найден");
         }
 
         users.put(user.getId(), user);

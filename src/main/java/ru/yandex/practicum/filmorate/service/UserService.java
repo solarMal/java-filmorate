@@ -7,10 +7,12 @@ import ru.yandex.practicum.filmorate.exception.CommonIdException;
 import ru.yandex.practicum.filmorate.exception.FriendAlreadyExist;
 import ru.yandex.practicum.filmorate.exception.FriendNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,10 +52,6 @@ public class UserService {
 
         User user = userStorage.getUserById(id);
         User friend = userStorage.getUserById(friendId);
-
-        if (!user.getFriendsId().contains(friendId)) {
-            throw new FriendNotFoundException("пользователь с id " + friendId + " не является вашим другом ");
-        }
 
         user.getFriendsId().remove(friendId);
         friend.getFriendsId().remove(id);
