@@ -36,7 +36,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.put(film.getId(), film);
         log.info("Фильм с id {} успешно обновлён", film.getId());
         return film;
-    }мке
+    }
 
     @Override
     public Set<Film> getAllFilms() {
