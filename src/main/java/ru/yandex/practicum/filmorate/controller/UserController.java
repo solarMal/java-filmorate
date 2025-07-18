@@ -1,74 +1,61 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private int dynamicId = 1;
-    Map<Integer, User> users = new HashMap<>();
+    UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     public User createUser(@RequestBody User user) throws ValidateException {
-        userValidate(user);
-        user.setId(dynamicId++);
-        users.put(user.getId(), user);
-        log.info("Пользователь {} успешно создан", user);
-        return user;
+        return userService.createUser(user);
     }
 
     @PutMapping
     public User updateUser(@RequestBody User user) throws ValidateException {
-        userValidate(user);
-        if (!users.containsKey(user.getId())) {
-            log.warn("Пользователь с id {} не найден", user.getId());
-            throw new ValidateException("Пользователь с id " + user.getId() + " не найден");
-        }
-
-        users.put(user.getId(), user);
-        log.info("Пользователь с id {} обновлён", user.getId());
-        return user;
+        return userService.updateUser(user);
     }
 
     @GetMapping
     public List<User> getUsers() {
-        if (users.isEmpty()) {
-            log.debug("нет активных пользователей");
-        }
-
-        return new ArrayList<>(users.values());
+        return userService.getUsers();
     }
 
-    public void userValidate(User user) throws ValidateException {
-        if (user == null) {
-            throw new NullPointerException("Пользователь не может быть null");
-        }
-
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            throw new ValidateException("Email не может быть пустым и должен содержать символ '@'");
-        }
-
-        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            throw new ValidateException("Login не может быть пустым и не должен содержать пробелы");
-        }
-
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-
-        if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidateException("Дата рождения не может быть в будущем");
-        }
+    @PutMapping("/{id}/friends/{friendId}")
+    public User addFriend(@PathVariable long id,
+                          @PathVariable long friendId) {
+        return userService.addFriend(id, friendId);
     }
 
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public User deleteFriend(@PathVariable long id,
+                             @PathVariable long friendId) {
+        return userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public Set<User> getAllFriends(@PathVariable long id) {
+        return userService.getAllFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Set<User> getCommonFriends(@PathVariable long id,
+                                       @PathVariable long otherId) {
+        return userService.getCommonFriends(id, otherId);
+    }
 }
