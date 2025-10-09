@@ -2,4 +2,4 @@
 
 Ниже показана схема базы данных для проекта:
 
-![ER Diagram](java-filmorate bddiagram.png)
+![ER Diagram](java-filmorate-bddiagram.png)
