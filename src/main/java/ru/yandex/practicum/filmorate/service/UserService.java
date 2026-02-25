@@ -2,9 +2,11 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.CommonIdException;
 import ru.yandex.practicum.filmorate.exception.FriendAlreadyExist;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -20,7 +22,7 @@ public class UserService {
     UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -93,7 +95,20 @@ public class UserService {
     }
 
     public User updateUser(User user) {
+        if (user.getId() <= 0 ) {
+            throw new CommonIdException("id должен быть положительным");
+        }
+
+        User existing = userStorage.getUserById(user.getId());
+
         return userStorage.updateUser(user);
+    }
+
+    public User getUserById(long id) {
+        if (id <= 0 ) {
+            throw new CommonIdException("id должен быть положительным");
+        }
+        return userStorage.getUserById(id);
     }
 
     public List<User> getUsers() {

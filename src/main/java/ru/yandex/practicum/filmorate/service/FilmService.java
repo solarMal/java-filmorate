@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.LikeFromUserException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
@@ -21,7 +22,8 @@ public class FilmService {
     UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage
+            , @Qualifier("userDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -43,7 +45,7 @@ public class FilmService {
         User user = userStorage.getUserById(userId);
 
         if (!film.getLikes().contains(user.getId())) {
-            throw new LikeFromUserException("пользователь с id " + user.getId() + " ещё не ставил лайк этому фильму");
+            throw new LikeFromUserException("Пользователь с id " + user.getId() + " ещё не ставил лайк этому фильму");
         }
 
         film.getLikes().remove(user.getId());
