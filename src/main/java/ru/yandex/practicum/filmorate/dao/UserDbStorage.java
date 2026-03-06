@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -34,10 +35,7 @@ public class UserDbStorage implements UserStorage {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    sql,
-                    Statement.RETURN_GENERATED_KEYS
-            );
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getLogin());
@@ -47,7 +45,7 @@ public class UserDbStorage implements UserStorage {
             return ps;
         }, keyHolder);
 
-        long generatedId = keyHolder.getKey().longValue();
+        long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
         return new User(
                 generatedId,
@@ -90,7 +88,21 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getUsers() {
-        return List.of();
+        String sql = "SELECT * FROM app_user";
+
+        return jdbcTemplate.query(sql, userRowMapper);
+    }
+
+    public void deleteUserById(long id) {
+        String sql = "DELETE FROM app_user WHERE id = ?";
+
+        jdbcTemplate.update(sql, id);
+    }
+
+    public void deleteAllUsers() {
+        String sql = "DELETE from app_user";
+
+        jdbcTemplate.update(sql);
     }
 
     private final RowMapper<User> userRowMapper = (rs, rowNum) ->

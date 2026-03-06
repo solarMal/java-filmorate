@@ -53,6 +53,16 @@ public class InMemoryUserStorage implements UserStorage {
         return new ArrayList<>(users.values());
     }
 
+    @Override
+    public void deleteUserById(long id) {
+        users.remove(id);
+    }
+
+    @Override
+    public void deleteAllUsers() {
+        users.clear();
+    }
+
     public void userValidate(User user) throws ValidateException {
         if (user == null) {
             throw new NullPointerException("Пользователь не может быть null");

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.CommonIdException;
 import ru.yandex.practicum.filmorate.exception.FriendAlreadyExist;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -113,5 +112,17 @@ public class UserService {
 
     public List<User> getUsers() {
         return userStorage.getUsers();
+    }
+
+    public void deleteUserById(long id) {
+        if (id <= 0) {
+            throw new CommonIdException("введите id больше 0");
+        }
+
+        userStorage.deleteUserById(id);
+    }
+
+    public void deleteAllUsers() {
+        userStorage.deleteAllUsers();
     }
 }
