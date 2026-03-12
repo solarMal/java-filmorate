@@ -54,7 +54,9 @@ public class ErrorHandler {
 
     @ExceptionHandler(GenreNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse genreNotFound(GenreNotFoundException e) {return new ErrorResponse(e.getMessage());}
+    public ErrorResponse genreNotFound(GenreNotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 
     @ExceptionHandler(MpaNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
