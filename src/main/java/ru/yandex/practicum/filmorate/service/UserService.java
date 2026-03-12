@@ -6,13 +6,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.CommonIdException;
 import ru.yandex.practicum.filmorate.exception.FriendAlreadyExist;
+import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,50 +24,58 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    public User addFriend(long id, long friendId) {
-        if (id == friendId) {
-            throw new CommonIdException("нельзя добавлять самого себя в друзья");
+    public List<User> addFriend(long userId, long friendId) {
+        if (userId == friendId) {
+            throw new ValidateException("Нельзя добавить себя в друзья");
         }
 
-        User user = userStorage.getUserById(id);
+        User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
 
-        if (user.getFriendsId().contains(friendId)) {
-            throw new FriendAlreadyExist("данный пользователь уже ваш друг");
+        Set<Long> friendsInDb = userStorage.getFriendsId(userId);
+        if (friendsInDb.contains(friendId)) {
+            throw new FriendAlreadyExist("Друг уже существует");
         }
 
-        user.getFriendsId().add(friendId);
-        friend.getFriendsId().add(id);
+        // Если у тебя есть заявка от друга — подтверждаем её
+        if (userStorage.isFriendRequestExists(userId, friendId)) {
+            userStorage.addFriend(userId, friendId);
+            userStorage.deleteFriendRequest(userId, friendId);
+            return List.of(user, friend);
+        }
 
-        log.info("вы и пользователь с id {} теперь друзья", friendId);
+        // Иначе добавляем друга к себе и создаём заявку другому
+        userStorage.addFriend(userId, friendId);
+        userStorage.addFriendRequest(friendId, userId);
 
-        return user;
+        return List.of(getUserById(user.getId()),getUserById(friend.getId()));
     }
 
-    public User deleteFriend(long id, long friendId) {
-        if (id == friendId) {
+    public User deleteFriend(long userId, long friendId) {
+        if (userId == friendId) {
             throw new CommonIdException("вы не можете удалить себя из друзей");
         }
 
-        User user = userStorage.getUserById(id);
+        User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
 
-        user.getFriendsId().remove(friendId);
-        friend.getFriendsId().remove(id);
+        userStorage.deleteFriend(user.getId(), friend.getId());
+        user.getFriendsId().remove(friend.getId());
+        userStorage.deleteFriendRequest(user.getId(), friend.getId());
+        user.getFriendRequest().remove(friend.getId());
 
         log.info("вы и пользователь с id {} теперь не друзья", friendId);
 
-        return user;
+        return getUserById(user.getId());
     }
 
     public Set<User> getAllFriends(long id) {
+
         User user = userStorage.getUserById(id);
 
-        if (user.getFriendsId().isEmpty()) {
-            return Collections.emptySet();
-        }
+        Set<Long> friendIds = userStorage.getFriendsId(id);
 
-        return user.getFriendsId().stream()
+        return friendIds.stream()
                 .map(userStorage::getUserById)
                 .collect(Collectors.toSet());
     }
@@ -90,15 +97,12 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        userValidate(user);
         return userStorage.createUser(user);
     }
 
     public User updateUser(User user) {
-        if (user.getId() <= 0 ) {
-            throw new CommonIdException("id должен быть положительным");
-        }
-
-        User existing = userStorage.getUserById(user.getId());
+        userValidate(user);
 
         return userStorage.updateUser(user);
     }
@@ -124,5 +128,27 @@ public class UserService {
 
     public void deleteAllUsers() {
         userStorage.deleteAllUsers();
+    }
+
+    private final void userValidate(User user) throws ValidateException {
+        if (user == null) {
+            throw new NullPointerException("Пользователь не может быть null");
+        }
+
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+            throw new ValidateException("Email не может быть пустым и должен содержать символ '@'");
+        }
+
+        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
+            throw new ValidateException("Login не может быть пустым и не должен содержать пробелы");
+        }
+
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+
+        if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now())) {
+            throw new ValidateException("Дата рождения не может быть в будущем");
+        }
     }
 }

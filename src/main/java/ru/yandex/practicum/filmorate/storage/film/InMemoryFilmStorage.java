@@ -2,12 +2,16 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.CommonIdException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -52,7 +56,71 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .orElseThrow(() -> new FilmNotFoundException("фильм с id " + id + " не найден"));
     }
 
-    public void filmValidate(Film film) throws ValidateException {
+    @Override
+    public void deleteFilmById(long id) {
+        if (id <= 0) {
+            throw new CommonIdException("id должен быть положительным");
+        }
+
+        Film removedFilm = films.remove(id);
+
+        if (removedFilm == null) {
+            throw new FilmNotFoundException("фильм с id " + id + " не найден");
+        }
+
+        log.info("фильм с id {} удалён", id);
+    }
+
+    @Override
+    public void deleteAllFilms() {
+        films.clear();
+        log.info("все фильмы удалены");
+    }
+
+    @Override
+    public void addLike(long filmId, long userId) {
+
+    }
+
+    @Override
+    public void removeLike(long filmId, long userId) {
+
+    }
+
+    @Override
+    public List<Film> getPopularFilms(int count) {
+        if (count <= 0) throw new ValidateException("Введите количество фильмов больше 0");
+
+        List<Film> films = getAllFilms();
+        if (films == null) films = Collections.emptyList();
+
+        return films.stream()
+                .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
+                .limit(count)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Genre> getAllGenres() {
+        return List.of();
+    }
+
+    @Override
+    public Genre getGenreById(int id) {
+        return null;
+    }
+
+    @Override
+    public List<Mpa> getAllMpa() {
+        return List.of();
+    }
+
+    @Override
+    public Mpa getMpaById(int id) {
+        return null;
+    }
+
+    private final void filmValidate(Film film) throws ValidateException {
         if (film == null) {
             throw new ValidateException("Фильм не может быть null");
         }

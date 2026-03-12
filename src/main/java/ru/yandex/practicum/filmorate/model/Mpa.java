@@ -8,15 +8,15 @@ import lombok.*;
 @EqualsAndHashCode
 @ToString
 @Builder
-public class Genre {
+public class Mpa {
     Long id;
     String name;
 
-    public Genre(Long id) {
+    public Mpa(Long id) {
         this.id = id;
     }
 
-    public Genre(Long id, String name) {
+    public Mpa(Long id, String name) {
         this.id = id;
         this.name = name;
     }

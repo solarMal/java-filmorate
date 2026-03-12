@@ -2,12 +2,15 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.CommonIdException;
+import ru.yandex.practicum.filmorate.exception.FriendAlreadyExist;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -63,7 +66,57 @@ public class InMemoryUserStorage implements UserStorage {
         users.clear();
     }
 
-    public void userValidate(User user) throws ValidateException {
+    @Override
+    public void addFriend(long userId, long friendId) {
+        if (userId == friendId) {
+            throw new CommonIdException("нельзя добавлять самого себя в друзья");
+        }
+
+        User user = getUserById(userId);
+        User friend = getUserById(friendId);
+
+        if (user.getFriendsId().contains(friendId)) {
+            throw new FriendAlreadyExist("данный пользователь уже ваш друг");
+        }
+
+        user.getFriendsId().add(friendId);
+        friend.getFriendsId().add(userId);
+
+        log.info("вы и пользователь с id {} теперь друзья", friendId);
+    }
+
+    @Override
+    public void addFriendRequest(long userId, long requesterId) {
+
+    }
+
+    @Override
+    public void deleteFriendRequest(long userId, long requesterId) {
+
+    }
+
+    @Override
+    public boolean isFriendRequestExists(long userId, long requesterId) {
+        return false;
+    }
+
+    @Override
+    public void deleteFriend(long userId, long friendId) {
+
+    }
+
+    @Override
+    public Set<Long> getFriendsId(long userId) {
+        User user = users.get(userId);
+
+        if (user == null) {
+            throw new UserNotFoundException("пользователь не найден");
+        }
+        return new HashSet<>(user.getFriendsId());
+    }
+
+
+    private void userValidate(User user) throws ValidateException {
         if (user == null) {
             throw new NullPointerException("Пользователь не может быть null");
         }

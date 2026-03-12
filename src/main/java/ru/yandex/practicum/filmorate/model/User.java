@@ -26,8 +26,7 @@ public class User {
     private Set<Long> friendsId = new HashSet<>();
 
     @Builder.Default
-    private Map<Long, FriendStatus> friendRequest = new HashMap<>();
-
+    private Set<Long> friendRequest = new HashSet<>();
 
     public User(long id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
@@ -35,7 +34,6 @@ public class User {
         this.login = login;
         this.name = name;
         this.birthday = birthday;
-        this.friendsId = new HashSet<>();
     }
 
 }
