@@ -120,7 +120,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return null;
     }
 
-    private final void filmValidate(Film film) throws ValidateException {
+    void filmValidate(Film film) throws ValidateException {
         if (film == null) {
             throw new ValidateException("Фильм не может быть null");
         }

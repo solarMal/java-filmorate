@@ -115,7 +115,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
 
-    private void userValidate(User user) throws ValidateException {
+     void userValidate(User user) throws ValidateException {
         if (user == null) {
             throw new NullPointerException("Пользователь не может быть null");
         }
