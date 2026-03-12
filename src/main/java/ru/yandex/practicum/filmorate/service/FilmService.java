@@ -109,7 +109,6 @@ public class FilmService {
         if (id < 1 || id > 6) {
             throw new GenreNotFoundException("id жанра должен быть от 1 до 6");
         }
-
         return filmStorage.getGenreById(id);
     }
 
@@ -121,7 +120,6 @@ public class FilmService {
         if (id < 1 || id > 5) {
             throw new MpaNotFoundException("id mpa должен быть от 1 до 5");
         }
-
         return filmStorage.getMpaById(id);
     }
 
