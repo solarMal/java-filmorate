@@ -232,7 +232,7 @@ public class FilmDbStorage implements FilmStorage {
 
         try {
             return jdbcTemplate.queryForObject(sql, genreRowMapper, id);
-        } catch (EmptyResultDataAccessException e ) {
+        } catch (EmptyResultDataAccessException e) {
             throw new GenreNotFoundException("Жанр с id " + id + " не найден");
         }
     }
