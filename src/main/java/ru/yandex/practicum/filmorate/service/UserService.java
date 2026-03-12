@@ -110,7 +110,7 @@ public class UserService {
     }
 
     public User getUserById(long id) {
-        if (id <= 0 ) {
+        if (id <= 0) {
             throw new CommonIdException("id должен быть положительным");
         }
         return userStorage.getUserById(id);
@@ -124,7 +124,6 @@ public class UserService {
         if (id <= 0) {
             throw new CommonIdException("введите id больше 0");
         }
-
         userStorage.deleteUserById(id);
     }
 
