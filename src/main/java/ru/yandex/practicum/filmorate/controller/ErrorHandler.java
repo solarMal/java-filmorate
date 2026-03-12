@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.model.ErrorResponse;
 public class ErrorHandler {
 
     @ExceptionHandler(CommonIdException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse commonIdException(CommonIdException e) {
         return new ErrorResponse(e.getMessage());
     }
@@ -52,9 +52,21 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler(GenreNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse genreNotFound(GenreNotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(MpaNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse mpaNotFoundException(MpaNotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse serverErrorHandler(Throwable e) {
-        return new ErrorResponse("Произошла непредвидимая ошибка");
+        return new ErrorResponse("Произошла непредвиденная ошибка");
     }
 }

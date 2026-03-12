@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.CommonIdException;
+import ru.yandex.practicum.filmorate.exception.FriendAlreadyExist;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -52,6 +54,66 @@ public class InMemoryUserStorage implements UserStorage {
 
         return new ArrayList<>(users.values());
     }
+
+    @Override
+    public void deleteUserById(long id) {
+        users.remove(id);
+    }
+
+    @Override
+    public void deleteAllUsers() {
+        users.clear();
+    }
+
+    @Override
+    public void addFriend(long userId, long friendId) {
+        if (userId == friendId) {
+            throw new CommonIdException("нельзя добавлять самого себя в друзья");
+        }
+
+        User user = getUserById(userId);
+        User friend = getUserById(friendId);
+
+        if (user.getFriendsId().contains(friendId)) {
+            throw new FriendAlreadyExist("данный пользователь уже ваш друг");
+        }
+
+        user.getFriendsId().add(friendId);
+        friend.getFriendsId().add(userId);
+
+        log.info("вы и пользователь с id {} теперь друзья", friendId);
+    }
+
+    @Override
+    public void addFriendRequest(long userId, long requesterId) {
+
+    }
+
+    @Override
+    public void deleteFriendRequest(long userId, long requesterId) {
+
+    }
+
+    @Override
+    public boolean isFriendRequestExists(long userId, long requesterId) {
+        return false;
+    }
+
+    @Override
+    public void deleteFriend(long userId, long friendId) {
+
+    }
+
+    @Override
+    public Set<Long> getFriendsId(long userId) {
+        User user = users.get(userId);
+
+        if (user == null) {
+            throw new UserNotFoundException("пользователь не найден");
+        }
+        return new HashSet<>(user.getFriendsId());
+    }
+
 
     public void userValidate(User user) throws ValidateException {
         if (user == null) {

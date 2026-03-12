@@ -19,11 +19,22 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private int duration;
+    private Mpa mpa;
+    private int rate;
 
-    @Builder.Default
+    @Builder.Default()
     private Set<Long> likes = new HashSet<>();
-    private Set<Genre> genre = new HashSet<>();
-    private Set<MPA> mpa = new HashSet<>();
+    @Builder.Default
+    private Set<Genre> genres = new HashSet<>();
+
+    public Film(long id, String name, String description, LocalDate releaseDate, int duration, int rate) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.rate = rate;
+    }
 
     public Film(long id, String name, String description, LocalDate releaseDate, int duration) {
         this.id = id;
@@ -31,16 +42,5 @@ public class Film {
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-    }
-
-    public Film(long id, String name, String description, LocalDate releaseDate, int duration, Set<Genre> genre
-            , Set<MPA> mpa) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-        this.genre = genre;
-        this.mpa = mpa;
     }
 }

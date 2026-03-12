@@ -23,6 +23,9 @@ public class User {
     @Builder.Default
     private Set<Long> friendsId = new HashSet<>();
 
+    @Builder.Default
+    private Set<Long> friendRequest = new HashSet<>();
+
     public User(long id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
         this.email = email;
@@ -30,4 +33,5 @@ public class User {
         this.name = name;
         this.birthday = birthday;
     }
+
 }

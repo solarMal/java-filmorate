@@ -35,6 +35,21 @@ public class FilmController {
         return filmService.getAllFilms();
     }
 
+    @GetMapping("{id}")
+    public Film getFilmById(@PathVariable long id) {
+        return filmService.getFilmById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteFilmById(@PathVariable long id) {
+         filmService.deleteFilmById(id);
+    }
+
+    @DeleteMapping
+    public void deleteAllFilm() {
+        filmService.deleteAllFilms();
+    }
+
     @PutMapping("{id}/like/{userId}")
     public Film addLike(@PathVariable long id,
                         @PathVariable long userId) {
@@ -51,5 +66,4 @@ public class FilmController {
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
         return filmService.getPopularFilms(count);
     }
-
 }
