@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
@@ -39,17 +38,7 @@ public class ReviewService {
     }
 
     public Review updateReview(Review review) {
-        validateReview(review);
-        Review rev = getReviewById(review.getId());
-
-        if (review.getUserId() != rev.getUserId() || review.getFilmId() != rev.getFilmId()) {
-            throw new ValidateException("ошибка обновления отзыва");
-        }
         return reviewStorage.updateReview(review);
-    }
-
-    public List<Review> getAllReviews() {
-        return reviewStorage.getAllReviews();
     }
 
     public Review getReviewById(long id) {
@@ -65,6 +54,26 @@ public class ReviewService {
     public void deleteAllReviews() {
         reviewStorage.deleteAllReviews();
         log.info("все отзывы удалены");
+    }
+
+    public List<Review> getAllReviewsByFilmId(Long filmId, Integer count) {
+        return reviewStorage.getAllReviewsByFilmId(filmId, count);
+    }
+
+    public void addLikeByUserId(long id, long userId) {
+        reviewStorage.addLikeByUserId(id, userId);
+    }
+
+    public void addDislikeByUserId(long id, long userId) {
+        reviewStorage.addDislikeByUserId(id, userId);
+    }
+
+    public void removeLike(long id, long userId) {
+        reviewStorage.removeLike(id, userId);
+    }
+
+    public void removeDislike(long id, long userId) {
+        reviewStorage.removeDislike(id, userId);
     }
 
     void validateReview(Review review) {

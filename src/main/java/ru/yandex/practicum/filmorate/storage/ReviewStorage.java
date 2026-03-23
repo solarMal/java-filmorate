@@ -10,11 +10,19 @@ public interface ReviewStorage {
 
     Review updateReview(Review review);
 
-    List<Review> getAllReviews();
-
     Optional<Review> getReviewById(long id);
 
     void deleteReviewById(long id);
 
     void deleteAllReviews();
+
+    List<Review> getAllReviewsByFilmId(Long filmId, Integer count);
+
+    void addLikeByUserId(long id, long userId);
+
+    void addDislikeByUserId(long id, long userId);
+
+    void removeLike(long id, long userId);
+
+    void removeDislike(long id, long userId);
 }

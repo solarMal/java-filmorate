@@ -6,23 +6,22 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "reviewId")
 @ToString
 @Builder
 public class Review {
-    private long id;
+    private long reviewId;
+    private String content;
+    private boolean positive;
     private long userId;
     private long filmId;
-    private String reviewText;
+    private int useful;
 
-    public Review(long userId, long filmId, String reviewText) {
+    public Review(String content, boolean positive, long userId, long filmId, int useful) {
+        this.content = content;
+        this.positive = positive;
         this.userId = userId;
         this.filmId = filmId;
-        this.reviewText = reviewText;
-    }
-
-    public Review(long id, String reviewText) {
-        this.id = id;
-        this.reviewText = reviewText;
+        this.useful = useful;
     }
 }
