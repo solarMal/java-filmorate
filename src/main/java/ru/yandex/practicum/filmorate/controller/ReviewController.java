@@ -27,9 +27,12 @@ public class ReviewController {
         return reviewService.updateReview(review);
     }
 
-    @GetMapping
-    public List<Review> getAllReviews() {
-        return reviewService.getAllReviews();
+    @GetMapping()
+    public List<Review> getAllReviewsByFilmId(
+            @RequestParam(required = false) Long filmId,
+            @RequestParam(defaultValue = "10") Integer count) {
+
+        return reviewService.getAllReviewsByFilmId(filmId, count);
     }
 
     @GetMapping("/{id}")
@@ -45,5 +48,29 @@ public class ReviewController {
     @DeleteMapping
     public void deleteAllReviews() {
         reviewService.deleteAllReviews();
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLikeByUserId(@PathVariable long id,
+                                @PathVariable long userId) {
+        reviewService.addLikeByUserId(id, userId);
+    }
+
+    @PutMapping("/{id}/dislike/{userId}")
+    public void addDislikeByUserId(@PathVariable long id,
+                                   @PathVariable long userId) {
+        reviewService.addDislikeByUserId(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable long id,
+                           @PathVariable long userId) {
+        reviewService.removeLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/dislike/{userId}")
+    public void removeDislike(@PathVariable long id,
+                              @PathVariable long userId) {
+        reviewService.removeDislike(id, userId);
     }
 }
