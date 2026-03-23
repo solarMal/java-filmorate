@@ -119,9 +119,7 @@ public class ReviewDbStorage implements ReviewStorage {
         try {
             String checkSql = "SELECT is_like FROM review_likes WHERE review_id = ? AND user_id = ?";
             oldReaction = jdbcTemplate.queryForObject(checkSql, Boolean.class, reviewId, userId);
-        } catch (EmptyResultDataAccessException ignored) {
-
-        }
+        } catch (EmptyResultDataAccessException ignored) {}
 
         String upsertSql = "INSERT INTO review_likes (review_id, user_id, is_like) VALUES (?, ?, true) " +
                 "ON CONFLICT (review_id, user_id) DO UPDATE SET is_like = true";
