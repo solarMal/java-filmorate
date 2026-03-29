@@ -39,14 +39,12 @@ public class UserService {
             throw new FriendAlreadyExist("Друг уже существует");
         }
 
-        // Если у тебя есть заявка от друга — подтверждаем её
         if (userStorage.isFriendRequestExists(userId, friendId)) {
             userStorage.addFriend(userId, friendId);
             userStorage.deleteFriendRequest(userId, friendId);
             return List.of(user, friend);
         }
 
-        // Иначе добавляем друга к себе и создаём заявку другому
         userStorage.addFriend(userId, friendId);
         userStorage.addFriendRequest(friendId, userId);
 
